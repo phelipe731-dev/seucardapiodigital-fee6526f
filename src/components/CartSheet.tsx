@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ interface CartSheetProps {
 }
 
 export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
+  const navigate = useNavigate();
   const { items, updateQuantity, removeItem, updateObservations, clearCart, total } = useCart();
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
@@ -103,6 +105,9 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
       onOpenChange(false);
 
       toast.success("Pedido enviado com sucesso!");
+      
+      // Navigate to order tracking page
+      navigate(`/pedido?id=${order.id}`);
     } catch (error: any) {
       console.error("Erro ao finalizar pedido:", error);
       toast.error("Erro ao finalizar pedido. Tente novamente.");
