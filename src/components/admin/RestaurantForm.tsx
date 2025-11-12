@@ -23,6 +23,8 @@ export function RestaurantForm() {
     accepts_delivery: false,
     prep_time_min: 30,
     prep_time_max: 45,
+    working_days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+    accepts_orders_override: null as boolean | null,
   });
 
   useEffect(() => {
@@ -56,6 +58,8 @@ export function RestaurantForm() {
           accepts_delivery: data.accepts_delivery || false,
           prep_time_min: data.prep_time_min || 30,
           prep_time_max: data.prep_time_max || 45,
+          working_days: data.working_days || ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+          accepts_orders_override: data.accepts_orders_override,
         });
       }
     } catch (error: any) {
@@ -224,6 +228,77 @@ export function RestaurantForm() {
                 value={formData.prep_time_max}
                 onChange={(e) => setFormData({ ...formData, prep_time_max: Number(e.target.value) })}
               />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <Label>Dias de Funcionamento</Label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { value: "monday", label: "Segunda" },
+                { value: "tuesday", label: "Terça" },
+                { value: "wednesday", label: "Quarta" },
+                { value: "thursday", label: "Quinta" },
+                { value: "friday", label: "Sexta" },
+                { value: "saturday", label: "Sábado" },
+                { value: "sunday", label: "Domingo" },
+              ].map((day) => (
+                <div key={day.value} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={day.value}
+                    checked={formData.working_days.includes(day.value)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setFormData({ 
+                          ...formData, 
+                          working_days: [...formData.working_days, day.value] 
+                        });
+                      } else {
+                        setFormData({ 
+                          ...formData, 
+                          working_days: formData.working_days.filter(d => d !== day.value) 
+                        });
+                      }
+                    }}
+                  />
+                  <Label htmlFor={day.value} className="font-normal cursor-pointer">
+                    {day.label}
+                  </Label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3 p-4 border border-border rounded-lg bg-muted/30">
+            <Label>Controle Manual de Pedidos</Label>
+            <p className="text-sm text-muted-foreground">
+              Use para abrir/fechar pedidos independentemente do horário
+            </p>
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant={formData.accepts_orders_override === true ? "default" : "outline"}
+                onClick={() => setFormData({ ...formData, accepts_orders_override: true })}
+                className="flex-1"
+              >
+                Sempre Aberto
+              </Button>
+              <Button
+                type="button"
+                variant={formData.accepts_orders_override === null ? "default" : "outline"}
+                onClick={() => setFormData({ ...formData, accepts_orders_override: null })}
+                className="flex-1"
+              >
+                Automático
+              </Button>
+              <Button
+                type="button"
+                variant={formData.accepts_orders_override === false ? "default" : "outline"}
+                onClick={() => setFormData({ ...formData, accepts_orders_override: false })}
+                className="flex-1"
+              >
+                Sempre Fechado
+              </Button>
             </div>
           </div>
 

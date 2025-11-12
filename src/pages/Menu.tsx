@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Phone, MapPin, Clock, Search } from "lucide-react";
+import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
@@ -21,6 +21,8 @@ interface Restaurant {
   opening_time: string;
   closing_time: string;
   accepts_delivery: boolean;
+  working_days: string[];
+  accepts_orders_override: boolean | null;
 }
 
 interface Category {
@@ -55,7 +57,23 @@ export default function Menu() {
   }, [restaurantId]);
 
   const isRestaurantOpen = () => {
-    if (!restaurant?.opening_time || !restaurant?.closing_time) return true;
+    if (!restaurant) return false;
+    
+    // Check manual override first
+    if (restaurant.accepts_orders_override !== null) {
+      return restaurant.accepts_orders_override;
+    }
+    
+    // Check if today is a working day
+    const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = daysOfWeek[new Date().getDay()];
+    
+    if (restaurant.working_days && !restaurant.working_days.includes(today)) {
+      return false;
+    }
+    
+    // Check time
+    if (!restaurant.opening_time || !restaurant.closing_time) return true;
     
     const now = new Date();
     const currentTime = now.getHours() * 60 + now.getMinutes();
@@ -156,24 +174,38 @@ export default function Menu() {
     );
   }
 
+  const getDayLabel = (day: string) => {
+    const dayMap: Record<string, string> = {
+      monday: "Seg", tuesday: "Ter", wednesday: "Qua",
+      thursday: "Qui", friday: "Sex", saturday: "Sáb", sunday: "Dom"
+    };
+    return dayMap[day] || day;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-gradient-primary text-white sticky top-0 z-40 shadow-elevated glass-effect">
-        <div className="container mx-auto px-4 py-4">
+      <header className="bg-gradient-primary text-primary-foreground sticky top-0 z-40 shadow-elevated">
+        <div className="container mx-auto px-4 py-5">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               {restaurant.logo_url && (
-                <img
-                  src={restaurant.logo_url}
-                  alt={restaurant.name}
-                  className="w-14 h-14 rounded-xl object-cover bg-white shadow-lg"
-                />
+                <div className="relative">
+                  <img
+                    src={restaurant.logo_url}
+                    alt={restaurant.name}
+                    className="w-16 h-16 rounded-2xl object-cover bg-white shadow-xl border-4 border-white/20"
+                  />
+                  <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-yellow-300 animate-pulse" />
+                </div>
               )}
-              <div>
-                <h1 className="text-xl md:text-2xl font-bold">{restaurant.name}</h1>
+              <div className="flex-1">
+                <h1 className="text-2xl md:text-3xl font-bold drop-shadow-lg flex items-center gap-2">
+                  {restaurant.name}
+                  {isRestaurantOpen() && <span className="text-xl">✨</span>}
+                </h1>
                 {restaurant.description && (
-                  <p className="text-sm opacity-90 hidden md:block">{restaurant.description}</p>
+                  <p className="text-sm opacity-90 mt-1 hidden md:block">{restaurant.description}</p>
                 )}
               </div>
             </div>
@@ -181,55 +213,58 @@ export default function Menu() {
               variant="secondary"
               size="lg"
               onClick={() => setCartOpen(true)}
-              className="relative shadow-lg"
+              className="relative shadow-xl hover:scale-105 transition-transform"
             >
-              <ShoppingCart className="mr-2" />
-              <span className="hidden sm:inline">Carrinho</span>
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              <span className="hidden sm:inline font-semibold">Carrinho</span>
               {items.length > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-destructive h-6 w-6 flex items-center justify-center p-0">
+                <Badge className="absolute -top-2 -right-2 bg-destructive h-7 w-7 flex items-center justify-center p-0 text-xs font-bold animate-pulse shadow-lg">
                   {items.length}
                 </Badge>
               )}
             </Button>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-3">
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Buscar produtos..."
+                placeholder="🔍 Busque seu prato favorito..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-white/95 backdrop-blur-sm"
+                className="pl-12 pr-4 h-12 bg-white/95 backdrop-blur-sm border-2 border-white/50 text-foreground placeholder:text-muted-foreground focus:border-white text-base font-medium shadow-lg"
               />
             </div>
             
             {/* Restaurant Info */}
-            <div className="flex flex-wrap gap-3 text-sm">
-              {restaurant.phone && (
-                <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                  <Phone size={14} />
-                  <span>{restaurant.phone}</span>
-                </div>
-              )}
-              {restaurant.address && (
-                <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                  <MapPin size={14} />
-                  <span className="line-clamp-1">{restaurant.address}</span>
-                </div>
-              )}
+            <div className="flex flex-wrap gap-2 text-sm">
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm font-semibold shadow-lg ${
+                isRestaurantOpen() 
+                  ? 'bg-green-500/90 text-white animate-pulse' 
+                  : 'bg-red-500/90 text-white'
+              }`}>
+                <Clock size={16} />
+                <span>{isRestaurantOpen() ? "🟢 ABERTO" : "🔴 FECHADO"}</span>
+              </div>
+              
               {restaurant.opening_time && restaurant.closing_time && (
-                <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg backdrop-blur-sm">
-                  <Clock size={14} />
-                  <span>{restaurant.opening_time} - {restaurant.closing_time}</span>
-                  <Badge 
-                    variant={isRestaurantOpen() ? "default" : "destructive"}
-                    className="ml-1"
-                  >
-                    {isRestaurantOpen() ? "Aberto" : "Fechado"}
-                  </Badge>
+                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-medium shadow-lg">
+                  <span>⏰ {restaurant.opening_time} - {restaurant.closing_time}</span>
+                </div>
+              )}
+              
+              {restaurant.working_days && restaurant.working_days.length < 7 && (
+                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-medium shadow-lg">
+                  <span>📅 {restaurant.working_days.map(getDayLabel).join(", ")}</span>
+                </div>
+              )}
+              
+              {restaurant.phone && (
+                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-medium shadow-lg">
+                  <Phone size={16} />
+                  <span>{restaurant.phone}</span>
                 </div>
               )}
             </div>
@@ -237,17 +272,33 @@ export default function Menu() {
         </div>
       </header>
 
+      {!isRestaurantOpen() && (
+        <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border-y-4 border-destructive/50 py-6 animate-fade-in-up">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-4 text-center">
+              <div className="text-5xl">😴</div>
+              <div>
+                <h3 className="text-xl font-bold text-destructive mb-1">Estamos Fechados Agora</h3>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Voltamos {restaurant.opening_time}. Navegue pelo cardápio, mas pedidos só durante o horário de funcionamento!
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Menu */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 pb-24">
         {searchTerm && (
-          <div className="mb-6">
-            <p className="text-muted-foreground">
-              {filteredProducts.length} resultado(s) encontrado(s) para "{searchTerm}"
+          <div className="mb-6 p-4 bg-primary/10 rounded-xl border-2 border-primary/30 animate-fade-in-up">
+            <p className="text-foreground font-semibold">
+              🔎 {filteredProducts.length} resultado(s) encontrado(s) para <span className="text-primary">"{searchTerm}"</span>
             </p>
           </div>
         )}
         
-        {categories.map((category) => {
+        {categories.map((category, idx) => {
           const categoryProducts = (searchTerm ? filteredProducts : products).filter(
             (p) => p.category_id === category.id
           );
@@ -255,63 +306,79 @@ export default function Menu() {
           if (categoryProducts.length === 0) return null;
 
           return (
-            <section key={category.id} className="mb-12 animate-fade-in-up">
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                  <span className="h-1 w-12 bg-primary rounded-full"></span>
-                  {category.name}
-                </h2>
+            <section key={category.id} className="mb-16 animate-fade-in-up" style={{ animationDelay: `${idx * 0.1}s` }}>
+              <div className="mb-8 relative">
+                <div className="flex items-center gap-4">
+                  <div className="h-2 w-16 bg-gradient-primary rounded-full shadow-lg"></div>
+                  <h2 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent flex items-center gap-2">
+                    {category.name}
+                    <Sparkles className="h-6 w-6 text-primary" />
+                  </h2>
+                  <div className="h-2 flex-1 bg-gradient-primary rounded-full opacity-20"></div>
+                </div>
                 {category.description && (
-                  <p className="text-muted-foreground mt-2 ml-15">
+                  <p className="text-muted-foreground mt-3 ml-20 text-base font-medium">
                     {category.description}
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {categoryProducts.map((product) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {categoryProducts.map((product, pIdx) => (
                   <Card
                     key={product.id}
-                    className={`overflow-hidden hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 ${
-                      !product.is_available ? "opacity-60" : ""
+                    className={`group overflow-hidden transition-all duration-300 hover:-translate-y-3 cursor-pointer border-2 bg-card/95 backdrop-blur animate-fade-in-up ${
+                      !product.is_available 
+                        ? "opacity-60 hover:border-muted" 
+                        : "hover:shadow-elevated hover:border-primary/50"
                     }`}
+                    style={{ animationDelay: `${pIdx * 0.05}s` }}
+                    onClick={() => !isRestaurantOpen() && toast.error("Restaurante fechado no momento 😔")}
                   >
                     {product.image_url && (
-                      <div className="aspect-video w-full overflow-hidden relative">
+                      <div className="relative h-64 overflow-hidden bg-muted">
                         <img
                           src={product.image_url}
                           alt={product.name}
-                          className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         {!product.is_available && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                            <Badge variant="destructive" className="text-lg px-4 py-2">
-                              Esgotado
+                          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                            <Badge variant="secondary" className="text-base px-6 py-2 shadow-xl font-bold">
+                              😔 Esgotado
                             </Badge>
                           </div>
                         )}
                       </div>
                     )}
-                    <CardHeader>
-                      <div className="flex items-start justify-between gap-2">
-                        <CardTitle className="text-xl line-clamp-2">{product.name}</CardTitle>
-                      </div>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-2xl group-hover:text-primary transition-colors line-clamp-2">
+                        {product.name}
+                      </CardTitle>
                       {product.description && (
-                        <CardDescription className="line-clamp-2">
+                        <CardDescription className="text-base line-clamp-3 mt-2">
                           {product.description}
                         </CardDescription>
                       )}
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold text-primary">
-                          R$ {product.price.toFixed(2)}
-                        </span>
+                        <div className="flex flex-col">
+                          <span className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                            R$ {product.price.toFixed(2)}
+                          </span>
+                        </div>
                         <Button
                           variant="gradient"
-                          onClick={() => handleAddToCart(product)}
+                          size="lg"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(product);
+                          }}
                           disabled={!product.is_available || !isRestaurantOpen()}
-                          className="shadow-lg"
+                          className="group-hover:scale-110 transition-transform shadow-xl font-semibold"
                         >
+                          <Plus className="h-5 w-5 mr-2" />
                           Adicionar
                         </Button>
                       </div>
@@ -324,25 +391,23 @@ export default function Menu() {
         })}
 
         {categories.length === 0 && !loading && (
-          <Card className="text-center py-12">
-            <CardHeader>
-              <CardTitle>Nenhum produto disponível</CardTitle>
-              <CardDescription>
-                O cardápio ainda está sendo preparado. Volte em breve!
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <div className="text-center py-20 animate-fade-in-up">
+            <div className="text-8xl mb-6">👨‍🍳</div>
+            <h3 className="text-3xl font-bold text-foreground mb-3">Cardápio em Construção</h3>
+            <p className="text-muted-foreground text-lg">
+              Nossos chefs estão preparando delícias incríveis! Volte em breve 🍽️
+            </p>
+          </div>
         )}
         
         {searchTerm && filteredProducts.length === 0 && (
-          <Card className="text-center py-12">
-            <CardHeader>
-              <CardTitle>Nenhum produto encontrado</CardTitle>
-              <CardDescription>
-                Tente buscar com outros termos
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <div className="text-center py-20 animate-fade-in-up">
+            <div className="text-8xl mb-6">🔍</div>
+            <h3 className="text-3xl font-bold text-foreground mb-3">Nada Encontrado</h3>
+            <p className="text-muted-foreground text-lg">
+              Tente buscar com outros termos ou explore nosso cardápio completo
+            </p>
+          </div>
         )}
       </main>
 

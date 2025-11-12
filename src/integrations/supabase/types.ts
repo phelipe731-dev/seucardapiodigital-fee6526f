@@ -345,6 +345,7 @@ export type Database = {
       restaurants: {
         Row: {
           accepts_delivery: boolean | null
+          accepts_orders_override: boolean | null
           address: string | null
           closing_time: string | null
           created_at: string | null
@@ -362,9 +363,11 @@ export type Database = {
           theme_secondary_color: string | null
           updated_at: string | null
           whatsapp: string
+          working_days: string[] | null
         }
         Insert: {
           accepts_delivery?: boolean | null
+          accepts_orders_override?: boolean | null
           address?: string | null
           closing_time?: string | null
           created_at?: string | null
@@ -382,9 +385,11 @@ export type Database = {
           theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp: string
+          working_days?: string[] | null
         }
         Update: {
           accepts_delivery?: boolean | null
+          accepts_orders_override?: boolean | null
           address?: string | null
           closing_time?: string | null
           created_at?: string | null
@@ -402,6 +407,7 @@ export type Database = {
           theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp?: string
+          working_days?: string[] | null
         }
         Relationships: []
       }
