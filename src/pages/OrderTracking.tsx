@@ -98,6 +98,13 @@ export default function OrderTracking() {
           color: "bg-green-500",
           description: "Seu pedido está pronto! Você pode retirá-lo agora."
         };
+      case "out_for_delivery":
+        return {
+          label: "Saiu para Entrega",
+          icon: PackageCheck,
+          color: "bg-purple-500",
+          description: "Seu pedido saiu para entrega e chegará em breve!"
+        };
       case "completed":
         return {
           label: "Pedido Finalizado e Entregue",

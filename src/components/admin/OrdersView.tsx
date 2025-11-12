@@ -21,13 +21,9 @@ interface Order {
 export function OrdersView() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const previousOrdersCountRef = useRef<number>(0);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
-    // Create audio element for notification sound
-    audioRef.current = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OWhUA0PVqzn77BdGAg+ltryxnMpBSl+zPLaizsIHGyv8eSbSwwMUKXh8LJeHAU2jdXw0HswBSeAyvDdlT4KFmS36+yeUhENTKPi8bVeGAg6kdXwyXEqBSh9yfDdk0IJGW2w7+SZSgwMUKfi8LFcHAY4jtXw0HgwBSeAyfDdlT4KFWOz6+yfUhENTKPi8bVeGAg6ktXwyXAqBSl9yfDdlEIJGm6x7+SZTA0LUafi8LFcHAY4jtXwz3gwBSiAyPDdlT4KFmS26+yfUhEMTKPh8bVeGAg6kdXwyXEqBSh9yPDdlEIJGG2w8OSaSgwMUqji8LFcHAY3jtXw0HgwBSh/yPDdlD4JFmS26+yeUhENTKPh8bVeGQg6kdXwyXAqBSl+yPDdlEIJGm+x7+SaSg0LUafi8LFcGwY3jtXw0HgvBSh/yPDdlD4KFmS26+yeUhENTKPh8bVeGAg6kdXwyXAqBSl+yPDdlEIJGW+x7+SaSg0LUafi8LFcGwY4j9Tw0HgvBSh/yPDdlD4KFmS26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl+yPDdlEIJGm+w7+SaSg0LUafi8LJcGwY3jtXw0HgvBSh/yPDdlD4JFmS26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl+yPDdlEIJGm+x7+SaSg0LUafi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmS26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl+yPDdlEIJGm+x7+SaSg0LUafi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO36+yfUhENTKPh8bVeGQg6kdXwyXAqBSl+yPDdlEIJGm+x7+SaSg0LUafi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO36+yfUhENTKPh8bVeGQg6kdXwyXAqBSl+yPDdlEIJGm+x8OSaSg0LUafi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO36+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUafi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO36+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO36+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO36+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8LFcGwY3jtXw0HgwBSh/yPDdlT4JFmO26+yfUhENTKPh8bVeGQg6kdXwyXAqBSl9yPDdlEIJGm+x8OSaSg0LUqfi8A==');
-    
     // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -49,10 +45,8 @@ export function OrdersView() {
           const newOrder = payload.new as Order;
           setOrders(prev => [newOrder, ...prev]);
           
-          // Play notification sound
-          if (audioRef.current) {
-            audioRef.current.play().catch(err => console.error('Error playing sound:', err));
-          }
+          // Play kitchen bell sound
+          playKitchenBell();
           
           // Show browser notification
           if ('Notification' in window && Notification.permission === 'granted') {
@@ -74,8 +68,45 @@ export function OrdersView() {
 
     return () => {
       supabase.removeChannel(channel);
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
     };
   }, []);
+
+  const playKitchenBell = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = audioContext;
+      
+      const duration = 0.8;
+      const now = audioContext.currentTime;
+      
+      // Create multiple oscillators for a rich bell sound
+      const frequencies = [800, 1200, 1600, 2000];
+      
+      frequencies.forEach((freq, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, now);
+        
+        // Envelope: quick attack and exponential decay
+        gainNode.gain.setValueAtTime(0, now);
+        gainNode.gain.linearRampToValueAtTime(0.3 / (index + 1), now + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start(now);
+        oscillator.stop(now + duration);
+      });
+    } catch (error) {
+      console.error('Error playing bell sound:', error);
+    }
+  };
 
   const loadOrders = async () => {
     try {
@@ -129,6 +160,7 @@ export function OrdersView() {
       case "confirmed": return "bg-blue-500";
       case "preparing": return "bg-orange-500";
       case "ready": return "bg-green-500";
+      case "out_for_delivery": return "bg-purple-500";
       case "completed": return "bg-gray-500";
       case "cancelled": return "bg-red-500";
       default: return "bg-gray-400";
@@ -141,6 +173,7 @@ export function OrdersView() {
       case "confirmed": return "Confirmado";
       case "preparing": return "Preparando";
       case "ready": return "Pronto";
+      case "out_for_delivery": return "Saiu para Entrega";
       case "completed": return "Concluído";
       case "cancelled": return "Cancelado";
       default: return status;
@@ -230,6 +263,7 @@ export function OrdersView() {
                       <SelectItem value="confirmed">Confirmado</SelectItem>
                       <SelectItem value="preparing">Preparando</SelectItem>
                       <SelectItem value="ready">Pronto</SelectItem>
+                      <SelectItem value="out_for_delivery">Saiu para Entrega</SelectItem>
                       <SelectItem value="completed">Concluído</SelectItem>
                       <SelectItem value="cancelled">Cancelado</SelectItem>
                     </SelectContent>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface DeliveryZone {
+  id: string;
+  name: string;
+  fee: number;
+  min_order: number;
+}
 
 interface CartSheetProps {
   open: boolean;
@@ -25,22 +32,73 @@ interface CartSheetProps {
 
 export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
   const navigate = useNavigate();
-  const { items, updateQuantity, removeItem, updateObservations, clearCart, total } = useCart();
+  const { items, updateQuantity, removeItem, updateObservations, clearCart, total, deliveryFee, setDeliveryFee } = useCart();
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [orderType, setOrderType] = useState<"delivery" | "pickup">("pickup");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+  const [selectedZone, setSelectedZone] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  useEffect(() => {
+    if (restaurant.accepts_delivery) {
+      loadDeliveryZones();
+    }
+  }, [restaurant.id]);
+
+  useEffect(() => {
+    if (orderType === "pickup") {
+      setDeliveryFee(0);
+      setSelectedZone("");
+    }
+  }, [orderType]);
+
+  const loadDeliveryZones = async () => {
+    const { data, error } = await supabase
+      .from("delivery_zones")
+      .select("*")
+      .eq("restaurant_id", restaurant.id)
+      .eq("is_active", true);
+
+    if (!error && data) {
+      setDeliveryZones(data);
+    }
+  };
+
+  const handleZoneChange = (zoneId: string) => {
+    setSelectedZone(zoneId);
+    const zone = deliveryZones.find(z => z.id === zoneId);
+    if (zone) {
+      setDeliveryFee(Number(zone.fee));
+      if (subtotal < zone.min_order) {
+        toast.error(`Pedido mínimo para esta zona: R$ ${zone.min_order.toFixed(2)}`);
+      }
+    }
+  };
 
   const handleFinishOrder = async () => {
     if (!customerName.trim()) {
       toast.error("Por favor, informe seu nome");
       return;
     }
-    if (orderType === "delivery" && !deliveryAddress.trim()) {
-      toast.error("Por favor, informe o endereço de entrega");
-      return;
+    if (orderType === "delivery") {
+      if (!deliveryAddress.trim()) {
+        toast.error("Por favor, informe o endereço de entrega");
+        return;
+      }
+      if (!selectedZone) {
+        toast.error("Por favor, selecione a zona de entrega");
+        return;
+      }
+      const zone = deliveryZones.find(z => z.id === selectedZone);
+      if (zone && subtotal < zone.min_order) {
+        toast.error(`Pedido mínimo para esta zona: R$ ${zone.min_order.toFixed(2)}`);
+        return;
+      }
     }
     if (!paymentMethod) {
       toast.error("Por favor, selecione a forma de pagamento");
@@ -109,6 +167,13 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
         }
       });
 
+      message += `\n*Subtotal: R$ ${subtotal.toFixed(2)}*`;
+      
+      if (orderType === "delivery" && deliveryFee > 0) {
+        const zone = deliveryZones.find(z => z.id === selectedZone);
+        message += `\n*Taxa de Entrega (${zone?.name}): R$ ${deliveryFee.toFixed(2)}*`;
+      }
+      
       message += `\n*Total: R$ ${total.toFixed(2)}*`;
 
       // Open WhatsApp
@@ -248,16 +313,33 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
                 </div>
 
                 {orderType === "delivery" && (
-                  <div>
-                    <Label htmlFor="deliveryAddress">Endereço de Entrega *</Label>
-                    <Textarea
-                      id="deliveryAddress"
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder="Rua, número, bairro, complemento..."
-                      rows={3}
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <Label htmlFor="deliveryZone">Zona de Entrega *</Label>
+                      <Select value={selectedZone} onValueChange={handleZoneChange}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione sua zona" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {deliveryZones.map((zone) => (
+                            <SelectItem key={zone.id} value={zone.id}>
+                              {zone.name} - R$ {zone.fee.toFixed(2)} (Min: R$ {zone.min_order.toFixed(2)})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="deliveryAddress">Endereço de Entrega *</Label>
+                      <Textarea
+                        id="deliveryAddress"
+                        value={deliveryAddress}
+                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                        placeholder="Rua, número, bairro, complemento..."
+                        rows={3}
+                      />
+                    </div>
+                  </>
                 )}
                 
                 <div>
@@ -282,8 +364,18 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
               </div>
 
               {/* Total */}
-              <div className="border-t pt-4">
-                <div className="flex items-center justify-between text-xl font-bold">
+              <div className="border-t pt-4 space-y-2">
+                <div className="flex items-center justify-between text-base">
+                  <span>Subtotal:</span>
+                  <span>R$ {subtotal.toFixed(2)}</span>
+                </div>
+                {deliveryFee > 0 && (
+                  <div className="flex items-center justify-between text-base">
+                    <span>Taxa de Entrega:</span>
+                    <span>R$ {deliveryFee.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex items-center justify-between text-xl font-bold border-t pt-2">
                   <span>Total:</span>
                   <span className="text-primary">R$ {total.toFixed(2)}</span>
                 </div>
