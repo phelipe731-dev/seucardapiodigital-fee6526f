@@ -32,7 +32,7 @@ interface CartSheetProps {
 
 export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
   const navigate = useNavigate();
-  const { items, updateQuantity, removeItem, updateObservations, clearCart, total, deliveryFee, setDeliveryFee } = useCart();
+  const { items, updateQuantity, removeItem, updateObservations, clearCart, total, subtotal, deliveryFee, setDeliveryFee } = useCart();
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -41,8 +41,6 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
   const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
   const [selectedZone, setSelectedZone] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  
-  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   useEffect(() => {
     if (restaurant.accepts_delivery) {
@@ -161,7 +159,22 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
       message += `\n*Itens do pedido:*\n`;
 
       items.forEach((item) => {
-        message += `\n• ${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2)}\n`;
+        let itemPrice = item.price;
+        if (item.selectedOptions) {
+          item.selectedOptions.forEach(opt => {
+            opt.items.forEach(optItem => {
+              itemPrice += optItem.itemPrice;
+            });
+          });
+        }
+        message += `\n• ${item.quantity}x ${item.name} - R$ ${(itemPrice * item.quantity).toFixed(2)}\n`;
+        
+        if (item.selectedOptions && item.selectedOptions.length > 0) {
+          item.selectedOptions.forEach(opt => {
+            message += `  ${opt.optionName}: ${opt.items.map(i => i.itemName).join(", ")}\n`;
+          });
+        }
+        
         if (item.observations) {
           message += `  _Obs: ${item.observations}_\n`;
         }
@@ -230,6 +243,21 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
                       <p className="text-sm text-muted-foreground">
                         R$ {item.price.toFixed(2)} cada
                       </p>
+                      {item.selectedOptions && item.selectedOptions.length > 0 && (
+                        <div className="text-xs text-muted-foreground mt-1 space-y-1">
+                          {item.selectedOptions.map((opt, idx) => (
+                            <div key={idx}>
+                              <span className="font-medium">{opt.optionName}:</span>{" "}
+                              {opt.items.map(i => i.itemName).join(", ")}
+                              {opt.items.some(i => i.itemPrice > 0) && (
+                                <span className="ml-1 text-primary">
+                                  (+ R$ {opt.items.reduce((sum, i) => sum + i.itemPrice, 0).toFixed(2)})
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                       <div className="flex items-center gap-2 mt-2">
                         <Button
                           size="icon"

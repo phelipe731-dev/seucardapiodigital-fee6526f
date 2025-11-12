@@ -1,5 +1,15 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
+export interface SelectedOption {
+  optionId: string;
+  optionName: string;
+  items: {
+    itemId: string;
+    itemName: string;
+    itemPrice: number;
+  }[];
+}
+
 interface CartItem {
   id: string;
   name: string;
@@ -7,6 +17,7 @@ interface CartItem {
   quantity: number;
   observations?: string;
   image_url?: string;
+  selectedOptions?: SelectedOption[];
 }
 
 interface CartContextType {
@@ -19,6 +30,7 @@ interface CartContextType {
   deliveryFee: number;
   setDeliveryFee: (fee: number) => void;
   total: number;
+  subtotal: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -29,10 +41,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addItem = (item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     setItems((prev) => {
-      const existing = prev.find((i) => i.id === item.id);
+      // Check if same item with same options exists
+      const existing = prev.find((i) => {
+        if (i.id !== item.id) return false;
+        
+        // Compare selected options
+        const iOptions = i.selectedOptions || [];
+        const itemOptions = item.selectedOptions || [];
+        
+        if (iOptions.length !== itemOptions.length) return false;
+        
+        return iOptions.every(iOpt => {
+          const matchingOpt = itemOptions.find(io => io.optionId === iOpt.optionId);
+          if (!matchingOpt) return false;
+          
+          if (iOpt.items.length !== matchingOpt.items.length) return false;
+          
+          return iOpt.items.every(iItem => 
+            matchingOpt.items.some(mItem => mItem.itemId === iItem.itemId)
+          );
+        });
+      });
+      
       if (existing) {
         return prev.map((i) =>
-          i.id === item.id
+          i === existing
             ? { ...i, quantity: i.quantity + (item.quantity || 1) }
             : i
         );
@@ -66,7 +99,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setDeliveryFee(0);
   };
 
-  const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryFee;
+  const calculateItemTotal = (item: CartItem) => {
+    let itemTotal = item.price;
+    if (item.selectedOptions) {
+      item.selectedOptions.forEach(option => {
+        option.items.forEach(optItem => {
+          itemTotal += optItem.itemPrice;
+        });
+      });
+    }
+    return itemTotal * item.quantity;
+  };
+
+  const subtotal = items.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+  const total = subtotal + deliveryFee;
 
   return (
     <CartContext.Provider
@@ -80,6 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         deliveryFee,
         setDeliveryFee,
         total,
+        subtotal,
       }}
     >
       {children}

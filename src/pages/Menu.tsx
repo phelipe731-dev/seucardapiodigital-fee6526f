@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
+import type { SelectedOption } from "@/contexts/CartContext";
 
 interface Restaurant {
   id: string;
@@ -42,6 +46,21 @@ interface Product {
   category_id: string;
 }
 
+interface OptionItem {
+  id: string;
+  name: string;
+  price: number;
+}
+
+interface ProductOption {
+  id: string;
+  name: string;
+  is_required: boolean;
+  min_selections: number;
+  max_selections: number;
+  items: OptionItem[];
+}
+
 export default function Menu() {
   const { restaurantId } = useParams();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -50,6 +69,11 @@ export default function Menu() {
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [optionsDialogOpen, setOptionsDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
+  const [loadingOptions, setLoadingOptions] = useState(false);
   const { addItem, items } = useCart();
 
   useEffect(() => {
@@ -125,7 +149,7 @@ export default function Menu() {
     }
   };
 
-  const handleAddToCart = (product: Product) => {
+  const handleAddToCart = async (product: Product) => {
     if (!isRestaurantOpen()) {
       toast.error("Restaurante fechado no momento");
       return;
@@ -134,13 +158,136 @@ export default function Menu() {
       toast.error("Produto indisponível no momento");
       return;
     }
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image_url: product.image_url,
+
+    // Load product options
+    setLoadingOptions(true);
+    setSelectedProduct(product);
+    
+    const { data: optionsData, error: optionsError } = await supabase
+      .from("product_options")
+      .select("*")
+      .eq("product_id", product.id)
+      .order("display_order");
+
+    if (optionsError) {
+      console.error(optionsError);
+      // If no options, add directly to cart
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image_url: product.image_url,
+      });
+      toast.success(`${product.name} adicionado ao carrinho!`);
+      setLoadingOptions(false);
+      return;
+    }
+
+    if (!optionsData || optionsData.length === 0) {
+      // If no options, add directly to cart
+      addItem({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image_url: product.image_url,
+      });
+      toast.success(`${product.name} adicionado ao carrinho!`);
+      setLoadingOptions(false);
+      return;
+    }
+
+    // Load option items
+    const optionsWithItems = await Promise.all(
+      optionsData.map(async (option) => {
+        const { data: items } = await supabase
+          .from("product_option_items")
+          .select("*")
+          .eq("option_id", option.id)
+          .order("display_order");
+
+        return { ...option, items: items || [] };
+      })
+    );
+
+    setProductOptions(optionsWithItems);
+    setSelectedOptions({});
+    setOptionsDialogOpen(true);
+    setLoadingOptions(false);
+  };
+
+  const handleOptionChange = (optionId: string, itemId: string, checked: boolean) => {
+    setSelectedOptions(prev => {
+      const current = prev[optionId] || [];
+      const option = productOptions.find(o => o.id === optionId);
+      
+      if (!option) return prev;
+      
+      if (checked) {
+        // Check max selections
+        if (current.length >= option.max_selections) {
+          if (option.max_selections === 1) {
+            return { ...prev, [optionId]: [itemId] };
+          }
+          toast.error(`Máximo de ${option.max_selections} seleções`);
+          return prev;
+        }
+        return { ...prev, [optionId]: [...current, itemId] };
+      } else {
+        return { ...prev, [optionId]: current.filter(id => id !== itemId) };
+      }
     });
-    toast.success(`${product.name} adicionado ao carrinho!`);
+  };
+
+  const handleConfirmOptions = () => {
+    if (!selectedProduct) return;
+
+    // Validate required options
+    for (const option of productOptions) {
+      const selected = selectedOptions[option.id] || [];
+      
+      if (option.is_required && selected.length < option.min_selections) {
+        toast.error(`"${option.name}" é obrigatório (mínimo ${option.min_selections})`);
+        return;
+      }
+      
+      if (selected.length < option.min_selections) {
+        toast.error(`Selecione pelo menos ${option.min_selections} item(ns) em "${option.name}"`);
+        return;
+      }
+    }
+
+    // Build selected options data
+    const optionsData: SelectedOption[] = Object.entries(selectedOptions)
+      .filter(([_, items]) => items.length > 0)
+      .map(([optionId, itemIds]) => {
+        const option = productOptions.find(o => o.id === optionId)!;
+        return {
+          optionId,
+          optionName: option.name,
+          items: itemIds.map(itemId => {
+            const item = option.items.find(i => i.id === itemId)!;
+            return {
+              itemId: item.id,
+              itemName: item.name,
+              itemPrice: item.price,
+            };
+          }),
+        };
+      });
+
+    addItem({
+      id: selectedProduct.id,
+      name: selectedProduct.name,
+      price: selectedProduct.price,
+      image_url: selectedProduct.image_url,
+      selectedOptions: optionsData.length > 0 ? optionsData : undefined,
+    });
+    
+    toast.success(`${selectedProduct.name} adicionado ao carrinho!`);
+    setOptionsDialogOpen(false);
+    setSelectedProduct(null);
+    setProductOptions([]);
+    setSelectedOptions({});
   };
 
   const filteredProducts = products.filter((product) =>
@@ -416,6 +563,88 @@ export default function Menu() {
         onOpenChange={setCartOpen}
         restaurant={restaurant}
       />
+
+      {/* Options Dialog */}
+      <Dialog open={optionsDialogOpen} onOpenChange={setOptionsDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              {selectedProduct?.name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {loadingOptions ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-muted-foreground">Carregando opções...</p>
+            </div>
+          ) : (
+            <div className="space-y-6 pt-4">
+              {productOptions.map((option) => (
+                <Card key={option.id}>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center justify-between">
+                      <span>
+                        {option.name}
+                        {option.is_required && (
+                          <span className="ml-2 text-sm text-destructive font-normal">*obrigatório</span>
+                        )}
+                      </span>
+                      <span className="text-sm text-muted-foreground font-normal">
+                        {option.max_selections === 1 ? "Escolha 1" : `Escolha até ${option.max_selections}`}
+                      </span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {option.items.map((item) => {
+                      const isSelected = (selectedOptions[option.id] || []).includes(item.id);
+                      return (
+                        <div key={item.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-accent transition-colors">
+                          <Checkbox
+                            id={item.id}
+                            checked={isSelected}
+                            onCheckedChange={(checked) => 
+                              handleOptionChange(option.id, item.id, checked as boolean)
+                            }
+                          />
+                          <Label
+                            htmlFor={item.id}
+                            className="flex-1 cursor-pointer flex items-center justify-between"
+                          >
+                            <span className="font-medium">{item.name}</span>
+                            {item.price > 0 && (
+                              <span className="text-sm text-primary font-semibold">
+                                + R$ {item.price.toFixed(2)}
+                              </span>
+                            )}
+                          </Label>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              ))}
+              
+              <div className="flex gap-3 pt-4">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setOptionsDialogOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  variant="gradient"
+                  className="flex-1"
+                  onClick={handleConfirmOptions}
+                >
+                  Adicionar ao Carrinho
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

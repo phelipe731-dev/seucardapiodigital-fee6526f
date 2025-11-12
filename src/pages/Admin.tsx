@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
+import { ProductOptionsManager } from "@/components/admin/ProductOptionsManager";
 import { OrdersView } from "@/components/admin/OrdersView";
 import { QRCodeView } from "@/components/admin/QRCodeView";
 import PlansManager from "@/components/admin/PlansManager";
@@ -83,7 +84,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="dashboard" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 max-w-full overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10 max-w-full overflow-x-auto">
             <TabsTrigger value="dashboard" className="gap-2">
               <BarChart3 size={18} />
               Dashboard
@@ -99,6 +100,10 @@ export default function Admin() {
             <TabsTrigger value="products" className="gap-2">
               <Package size={18} />
               Produtos
+            </TabsTrigger>
+            <TabsTrigger value="options" className="gap-2">
+              <Settings size={18} />
+              Opcionais
             </TabsTrigger>
             <TabsTrigger value="delivery" className="gap-2">
               <MapPin size={18} />
@@ -136,6 +141,10 @@ export default function Admin() {
 
           <TabsContent value="products">
             <ProductsManager />
+          </TabsContent>
+
+          <TabsContent value="options">
+            <ProductOptionsManager />
           </TabsContent>
 
           <TabsContent value="delivery">
