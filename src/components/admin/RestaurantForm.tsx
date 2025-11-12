@@ -21,6 +21,8 @@ export function RestaurantForm() {
     opening_time: "09:00",
     closing_time: "22:00",
     accepts_delivery: false,
+    prep_time_min: 30,
+    prep_time_max: 45,
   });
 
   useEffect(() => {
@@ -52,6 +54,8 @@ export function RestaurantForm() {
           opening_time: data.opening_time || "09:00",
           closing_time: data.closing_time || "22:00",
           accepts_delivery: data.accepts_delivery || false,
+          prep_time_min: data.prep_time_min || 30,
+          prep_time_max: data.prep_time_max || 45,
         });
       }
     } catch (error: any) {
@@ -200,6 +204,27 @@ export function RestaurantForm() {
             <Label htmlFor="accepts_delivery" className="font-normal cursor-pointer">
               Aceita delivery
             </Label>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="prep_time_min">Tempo Prep. Mín (min)</Label>
+              <Input
+                id="prep_time_min"
+                type="number"
+                value={formData.prep_time_min}
+                onChange={(e) => setFormData({ ...formData, prep_time_min: Number(e.target.value) })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="prep_time_max">Tempo Prep. Máx (min)</Label>
+              <Input
+                id="prep_time_max"
+                type="number"
+                value={formData.prep_time_max}
+                onChange={(e) => setFormData({ ...formData, prep_time_max: Number(e.target.value) })}
+              />
+            </div>
           </div>
 
           <Button type="submit" variant="gradient" disabled={loading} className="w-full md:w-auto">

@@ -3,13 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
 import { OrdersView } from "@/components/admin/OrdersView";
 import { QRCodeView } from "@/components/admin/QRCodeView";
 import PlansManager from "@/components/admin/PlansManager";
+import DashboardStats from "@/components/admin/DashboardStats";
+import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
+import ThemeCustomizer from "@/components/admin/ThemeCustomizer";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
@@ -79,8 +82,12 @@ export default function Admin() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="restaurant" className="space-y-8">
-          <TabsList className="grid grid-cols-6 w-full max-w-4xl">
+        <Tabs defaultValue="dashboard" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 max-w-full overflow-x-auto">
+            <TabsTrigger value="dashboard" className="gap-2">
+              <BarChart3 size={18} />
+              Dashboard
+            </TabsTrigger>
             <TabsTrigger value="restaurant" className="gap-2">
               <Store size={18} />
               Restaurante
@@ -93,9 +100,17 @@ export default function Admin() {
               <Package size={18} />
               Produtos
             </TabsTrigger>
+            <TabsTrigger value="delivery" className="gap-2">
+              <MapPin size={18} />
+              Delivery
+            </TabsTrigger>
             <TabsTrigger value="orders" className="gap-2">
               <ShoppingBag size={18} />
               Pedidos
+            </TabsTrigger>
+            <TabsTrigger value="theme" className="gap-2">
+              <Palette size={18} />
+              Tema
             </TabsTrigger>
             <TabsTrigger value="plans" className="gap-2">
               <Package size={18} />
@@ -106,6 +121,10 @@ export default function Admin() {
               QR Code
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dashboard">
+            <DashboardStats />
+          </TabsContent>
 
           <TabsContent value="restaurant">
             <RestaurantForm />
@@ -119,8 +138,16 @@ export default function Admin() {
             <ProductsManager />
           </TabsContent>
 
+          <TabsContent value="delivery">
+            <DeliveryZonesManager />
+          </TabsContent>
+
           <TabsContent value="orders">
             <OrdersView />
+          </TabsContent>
+
+          <TabsContent value="theme">
+            <ThemeCustomizer />
           </TabsContent>
 
           <TabsContent value="plans">

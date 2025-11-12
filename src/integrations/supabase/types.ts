@@ -55,6 +55,47 @@ export type Database = {
           },
         ]
       }
+      delivery_zones: {
+        Row: {
+          created_at: string | null
+          delivery_time: number | null
+          fee: number
+          id: string
+          is_active: boolean | null
+          min_order: number | null
+          name: string
+          restaurant_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivery_time?: number | null
+          fee?: number
+          id?: string
+          is_active?: boolean | null
+          min_order?: number | null
+          name: string
+          restaurant_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivery_time?: number | null
+          fee?: number
+          id?: string
+          is_active?: boolean | null
+          min_order?: number | null
+          name?: string
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_zones_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string | null
@@ -144,6 +185,82 @@ export type Database = {
           },
         ]
       }
+      product_option_items: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          id: string
+          name: string
+          option_id: string
+          price: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          name: string
+          option_id: string
+          price?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          name?: string
+          option_id?: string
+          price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_option_items_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "product_options"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_options: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          id: string
+          is_required: boolean | null
+          max_selections: number | null
+          min_selections: number | null
+          name: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_required?: boolean | null
+          max_selections?: number | null
+          min_selections?: number | null
+          name: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          is_required?: boolean | null
+          max_selections?: number | null
+          min_selections?: number | null
+          name?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_options_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string
@@ -154,6 +271,7 @@ export type Database = {
           is_active: boolean | null
           is_available: boolean | null
           name: string
+          preparation_time: number | null
           price: number
           restaurant_id: string
           updated_at: string | null
@@ -167,6 +285,7 @@ export type Database = {
           is_active?: boolean | null
           is_available?: boolean | null
           name: string
+          preparation_time?: number | null
           price: number
           restaurant_id: string
           updated_at?: string | null
@@ -180,6 +299,7 @@ export type Database = {
           is_active?: boolean | null
           is_available?: boolean | null
           name?: string
+          preparation_time?: number | null
           price?: number
           restaurant_id?: string
           updated_at?: string | null
@@ -236,6 +356,10 @@ export type Database = {
           opening_time: string | null
           owner_id: string
           phone: string
+          prep_time_max: number | null
+          prep_time_min: number | null
+          theme_primary_color: string | null
+          theme_secondary_color: string | null
           updated_at: string | null
           whatsapp: string
         }
@@ -252,6 +376,10 @@ export type Database = {
           opening_time?: string | null
           owner_id: string
           phone: string
+          prep_time_max?: number | null
+          prep_time_min?: number | null
+          theme_primary_color?: string | null
+          theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp: string
         }
@@ -268,6 +396,10 @@ export type Database = {
           opening_time?: string | null
           owner_id?: string
           phone?: string
+          prep_time_max?: number | null
+          prep_time_min?: number | null
+          theme_primary_color?: string | null
+          theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp?: string
         }
