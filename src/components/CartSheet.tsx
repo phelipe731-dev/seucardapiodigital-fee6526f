@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Minus, Plus, Trash2 } from "lucide-react";
@@ -18,6 +19,7 @@ interface CartSheetProps {
     id: string;
     name: string;
     whatsapp: string;
+    accepts_delivery: boolean;
   };
 }
 
@@ -27,11 +29,17 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [orderType, setOrderType] = useState<"delivery" | "pickup">("pickup");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleFinishOrder = async () => {
     if (!customerName.trim()) {
       toast.error("Por favor, informe seu nome");
+      return;
+    }
+    if (orderType === "delivery" && !deliveryAddress.trim()) {
+      toast.error("Por favor, informe o endereço de entrega");
       return;
     }
     if (!paymentMethod) {
@@ -78,11 +86,21 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
       if (itemsError) throw itemsError;
 
       // Generate WhatsApp message
-      let message = `🍽️ *NOVO PEDIDO - ${restaurant.name}*\n\n`;
+      const orderTypeText = orderType === "delivery" ? "🚚 DELIVERY" : "🏪 RETIRADA";
+      let message = `🍽️ *NOVO PEDIDO - ${restaurant.name}*\n`;
+      message += `${orderTypeText}\n\n`;
       message += `👤 *Cliente:* ${customerName}\n`;
       if (customerPhone) message += `📱 *Telefone:* ${customerPhone}\n`;
-      message += `💳 *Forma de pagamento:* ${paymentMethod}\n\n`;
-      message += `*Itens do pedido:*\n`;
+      if (orderType === "delivery") {
+        message += `📍 *Endereço:* ${deliveryAddress}\n`;
+      }
+      message += `💳 *Forma de pagamento:* ${paymentMethod}\n`;
+      
+      if (paymentMethod === "PIX") {
+        message += `⚠️ *AGUARDANDO COMPROVANTE PIX*\n`;
+      }
+      
+      message += `\n*Itens do pedido:*\n`;
 
       items.forEach((item) => {
         message += `\n• ${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2)}\n`;
@@ -102,6 +120,7 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
       setCustomerName("");
       setCustomerPhone("");
       setPaymentMethod("");
+      setDeliveryAddress("");
       onOpenChange(false);
 
       toast.success("Pedido enviado com sucesso!");
@@ -189,6 +208,26 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
 
               {/* Customer Info */}
               <div className="space-y-4 border-t pt-4">
+                {restaurant.accepts_delivery && (
+                  <div className="space-y-2">
+                    <Label>Tipo de Pedido *</Label>
+                    <RadioGroup value={orderType} onValueChange={(value) => setOrderType(value as "delivery" | "pickup")}>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="pickup" id="pickup" />
+                        <Label htmlFor="pickup" className="font-normal cursor-pointer">
+                          🏪 Retirada no local
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="delivery" id="delivery" />
+                        <Label htmlFor="delivery" className="font-normal cursor-pointer">
+                          🚚 Delivery
+                        </Label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                )}
+                
                 <div>
                   <Label htmlFor="customerName">Seu Nome *</Label>
                   <Input
@@ -207,6 +246,20 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
                     placeholder="(00) 00000-0000"
                   />
                 </div>
+
+                {orderType === "delivery" && (
+                  <div>
+                    <Label htmlFor="deliveryAddress">Endereço de Entrega *</Label>
+                    <Textarea
+                      id="deliveryAddress"
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      placeholder="Rua, número, bairro, complemento..."
+                      rows={3}
+                    />
+                  </div>
+                )}
+                
                 <div>
                   <Label htmlFor="paymentMethod">Forma de Pagamento *</Label>
                   <Select value={paymentMethod} onValueChange={setPaymentMethod}>
@@ -220,6 +273,11 @@ export function CartSheet({ open, onOpenChange, restaurant }: CartSheetProps) {
                       <SelectItem value="Cartão de Crédito">Cartão de Crédito</SelectItem>
                     </SelectContent>
                   </Select>
+                  {paymentMethod === "PIX" && (
+                    <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-2 p-2 bg-yellow-50 dark:bg-yellow-950/20 rounded">
+                      ⚠️ Após enviar o pedido via WhatsApp, envie o comprovante PIX para confirmar o pedido.
+                    </p>
+                  )}
                 </div>
               </div>
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
@@ -17,6 +18,9 @@ export function RestaurantForm() {
     phone: "",
     whatsapp: "",
     address: "",
+    opening_time: "09:00",
+    closing_time: "22:00",
+    accepts_delivery: false,
   });
 
   useEffect(() => {
@@ -45,6 +49,9 @@ export function RestaurantForm() {
           phone: data.phone || "",
           whatsapp: data.whatsapp || "",
           address: data.address || "",
+          opening_time: data.opening_time || "09:00",
+          closing_time: data.closing_time || "22:00",
+          accepts_delivery: data.accepts_delivery || false,
         });
       }
     } catch (error: any) {
@@ -159,6 +166,40 @@ export function RestaurantForm() {
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="opening_time">Horário de Abertura</Label>
+              <Input
+                id="opening_time"
+                type="time"
+                value={formData.opening_time}
+                onChange={(e) => setFormData({ ...formData, opening_time: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="closing_time">Horário de Fechamento</Label>
+              <Input
+                id="closing_time"
+                type="time"
+                value={formData.closing_time}
+                onChange={(e) => setFormData({ ...formData, closing_time: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="accepts_delivery"
+              checked={formData.accepts_delivery}
+              onCheckedChange={(checked) => 
+                setFormData({ ...formData, accepts_delivery: checked as boolean })
+              }
+            />
+            <Label htmlFor="accepts_delivery" className="font-normal cursor-pointer">
+              Aceita delivery
+            </Label>
           </div>
 
           <Button type="submit" variant="gradient" disabled={loading} className="w-full md:w-auto">

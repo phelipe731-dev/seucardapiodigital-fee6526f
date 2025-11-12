@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCart, Phone, MapPin } from "lucide-react";
+import { ShoppingCart, Phone, MapPin, Clock } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
@@ -17,6 +17,9 @@ interface Restaurant {
   phone: string;
   whatsapp: string;
   address: string;
+  opening_time: string;
+  closing_time: string;
+  accepts_delivery: boolean;
 }
 
 interface Category {
@@ -48,6 +51,21 @@ export default function Menu() {
   useEffect(() => {
     loadMenu();
   }, [restaurantId]);
+
+  const isRestaurantOpen = () => {
+    if (!restaurant?.opening_time || !restaurant?.closing_time) return true;
+    
+    const now = new Date();
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    
+    const [openHour, openMin] = restaurant.opening_time.split(':').map(Number);
+    const [closeHour, closeMin] = restaurant.closing_time.split(':').map(Number);
+    
+    const openingMinutes = openHour * 60 + openMin;
+    const closingMinutes = closeHour * 60 + closeMin;
+    
+    return currentTime >= openingMinutes && currentTime <= closingMinutes;
+  };
 
   const loadMenu = async () => {
     try {
@@ -88,6 +106,10 @@ export default function Menu() {
   };
 
   const handleAddToCart = (product: Product) => {
+    if (!isRestaurantOpen()) {
+      toast.error("Restaurante fechado no momento");
+      return;
+    }
     if (!product.is_available) {
       toast.error("Produto indisponível no momento");
       return;
@@ -174,6 +196,17 @@ export default function Menu() {
               <div className="flex items-center gap-2">
                 <MapPin size={16} />
                 <span>{restaurant.address}</span>
+              </div>
+            )}
+            {restaurant.opening_time && restaurant.closing_time && (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Clock size={16} />
+                  <span>{restaurant.opening_time} - {restaurant.closing_time}</span>
+                </div>
+                <Badge variant={isRestaurantOpen() ? "default" : "destructive"}>
+                  {isRestaurantOpen() ? "Aberto" : "Fechado"}
+                </Badge>
               </div>
             )}
           </div>

@@ -9,6 +9,7 @@ import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
 import { OrdersView } from "@/components/admin/OrdersView";
 import { QRCodeView } from "@/components/admin/QRCodeView";
+import PlansManager from "@/components/admin/PlansManager";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 
@@ -79,7 +80,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="restaurant" className="space-y-8">
-          <TabsList className="grid grid-cols-5 w-full max-w-3xl">
+          <TabsList className="grid grid-cols-6 w-full max-w-4xl">
             <TabsTrigger value="restaurant" className="gap-2">
               <Store size={18} />
               Restaurante
@@ -95,6 +96,10 @@ export default function Admin() {
             <TabsTrigger value="orders" className="gap-2">
               <ShoppingBag size={18} />
               Pedidos
+            </TabsTrigger>
+            <TabsTrigger value="plans" className="gap-2">
+              <Package size={18} />
+              Planos
             </TabsTrigger>
             <TabsTrigger value="qrcode" className="gap-2">
               <QrCode size={18} />
@@ -116,6 +121,10 @@ export default function Admin() {
 
           <TabsContent value="orders">
             <OrdersView />
+          </TabsContent>
+
+          <TabsContent value="plans">
+            <PlansManager />
           </TabsContent>
 
           <TabsContent value="qrcode">

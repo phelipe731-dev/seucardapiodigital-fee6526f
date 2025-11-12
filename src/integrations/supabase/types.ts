@@ -224,43 +224,88 @@ export type Database = {
       }
       restaurants: {
         Row: {
+          accepts_delivery: boolean | null
           address: string | null
+          closing_time: string | null
           created_at: string | null
           description: string | null
           id: string
           is_active: boolean | null
           logo_url: string | null
           name: string
+          opening_time: string | null
           owner_id: string
           phone: string
           updated_at: string | null
           whatsapp: string
         }
         Insert: {
+          accepts_delivery?: boolean | null
           address?: string | null
+          closing_time?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name: string
+          opening_time?: string | null
           owner_id: string
           phone: string
           updated_at?: string | null
           whatsapp: string
         }
         Update: {
+          accepts_delivery?: boolean | null
           address?: string | null
+          closing_time?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
           is_active?: boolean | null
           logo_url?: string | null
           name?: string
+          opening_time?: string | null
           owner_id?: string
           phone?: string
           updated_at?: string | null
           whatsapp?: string
+        }
+        Relationships: []
+      }
+      subscription_plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          duration_days: number
+          id: string
+          is_active: boolean | null
+          max_categories: number | null
+          max_products: number | null
+          name: string
+          price: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          max_categories?: number | null
+          max_products?: number | null
+          name: string
+          price: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_active?: boolean | null
+          max_categories?: number | null
+          max_products?: number | null
+          name?: string
+          price?: number
         }
         Relationships: []
       }
@@ -284,6 +329,44 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_subscriptions: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          id: string
+          is_active: boolean | null
+          plan_id: string
+          start_date: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          id?: string
+          is_active?: boolean | null
+          plan_id: string
+          start_date?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          is_active?: boolean | null
+          plan_id?: string
+          start_date?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
