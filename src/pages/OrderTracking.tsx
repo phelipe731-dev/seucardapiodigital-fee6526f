@@ -191,7 +191,7 @@ export default function OrderTracking() {
                 <Button 
                   variant="gradient" 
                   className="w-full"
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/menu")}
                 >
                   Fazer Novo Pedido
                 </Button>
