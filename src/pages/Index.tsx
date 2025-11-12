@@ -9,6 +9,26 @@ import phoneMenu from "@/assets/phone-menu.jpg";
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      {/* Header com Login */}
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Menu className="h-6 w-6 text-primary" />
+              <span className="text-xl font-bold text-foreground">Cardápio Digital</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" asChild>
+                <Link to="/auth">Entrar</Link>
+              </Button>
+              <Button variant="gradient" asChild>
+                <Link to="/auth">Criar Conta Grátis</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 px-4">
         <div className="absolute inset-0 z-0">
