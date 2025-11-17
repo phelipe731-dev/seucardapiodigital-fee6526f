@@ -1,0 +1,705 @@
+[
+  {
+    "id": 1,
+    "tipo": "imagem",
+    "titulo": "Promoção - Créditos SMS Black Friday",
+    "categoria": "Instagram Feed",
+    "tags": ["promo", "sms", "blackfriday"],
+    "image": "/materials/post01_full.jpg",
+    "thumb": "/materials/post01_thumb.jpg",
+    "legenda": "🔥 Black Friday Uptech! Créditos SMS com até 50% OFF! Aproveite antes que acabe! #sms #uptech #blackfriday",
+    "destaque": true
+  },
+  {
+    "id": 2,
+    "tipo": "imagem",
+    "titulo": "Lançamento - Nova Plataforma",
+    "categoria": "Instagram Feed",
+    "tags": ["lancamento", "plataforma"],
+    "image": "/materials/post02_full.jpg",
+    "thumb": "/materials/post02_thumb.jpg",
+    "legenda": "🚀 A nova era do SMS chegou! Conheça nossa plataforma renovada e turbine seus resultados! #novidade #uptech"
+  },
+  {
+    "id": 3,
+    "tipo": "imagem",
+    "titulo": "Planos e Preços - Starter",
+    "categoria": "Instagram Stories",
+    "tags": ["planos", "precos"],
+    "image": "/materials/post03_full.jpg",
+    "thumb": "/materials/post03_thumb.jpg",
+    "legenda": "💰 Planos que cabem no seu bolso! Comece hoje mesmo com o Plano Starter. #precos #uptech"
+  },
+  {
+    "id": 4,
+    "tipo": "imagem",
+    "titulo": "Conversão - Case de Sucesso",
+    "categoria": "Instagram Feed",
+    "tags": ["conversao", "case"],
+    "image": "/materials/post04_full.jpg",
+    "thumb": "/materials/post04_thumb.jpg",
+    "legenda": "📊 +300% de conversão em apenas 30 dias! Veja como nossos clientes estão crescendo. #resultados #uptech"
+  },
+  {
+    "id": 5,
+    "tipo": "imagem",
+    "titulo": "Automação - Campanha Inteligente",
+    "categoria": "Instagram Feed",
+    "tags": ["automacao", "ia"],
+    "image": "/materials/post05_full.jpg",
+    "thumb": "/materials/post05_thumb.jpg",
+    "legenda": "🤖 Automatize suas campanhas e ganhe mais tempo! Deixe a IA trabalhar por você. #automacao #uptech"
+  },
+  {
+    "id": 6,
+    "tipo": "imagem",
+    "titulo": "Marketing Digital - ROI Garantido",
+    "categoria": "Instagram Feed",
+    "tags": ["marketing", "roi"],
+    "image": "/materials/post06_full.jpg",
+    "thumb": "/materials/post06_thumb.jpg",
+    "legenda": "💎 ROI comprovado em todas as campanhas! Invista certo, colha resultados. #marketing #uptech"
+  },
+  {
+    "id": 7,
+    "tipo": "imagem",
+    "titulo": "Natal - Campanha Especial",
+    "categoria": "Instagram Stories",
+    "tags": ["natal", "promo"],
+    "image": "/materials/post07_full.jpg",
+    "thumb": "/materials/post07_thumb.jpg",
+    "legenda": "🎄 Natal Uptech! Presentes especiais para sua empresa crescer. #natal #uptech"
+  },
+  {
+    "id": 8,
+    "tipo": "imagem",
+    "titulo": "Páscoa - Oferta Limitada",
+    "categoria": "Instagram Feed",
+    "tags": ["pascoa", "promo"],
+    "image": "/materials/post08_full.jpg",
+    "thumb": "/materials/post08_thumb.jpg",
+    "legenda": "🐰 Páscoa com descontos especiais! Não perca essa oportunidade. #pascoa #uptech"
+  },
+  {
+    "id": 9,
+    "tipo": "imagem",
+    "titulo": "Início de Mês - Novos Planos",
+    "categoria": "Instagram Feed",
+    "tags": ["mensal", "planos"],
+    "image": "/materials/post09_full.jpg",
+    "thumb": "/materials/post09_thumb.jpg",
+    "legenda": "📅 Comece o mês com o pé direito! Novos planos e benefícios exclusivos. #novomes #uptech"
+  },
+  {
+    "id": 10,
+    "tipo": "imagem",
+    "titulo": "Impulsione Resultados - CTA",
+    "categoria": "Instagram Stories",
+    "tags": ["cta", "resultados"],
+    "image": "/materials/post10_full.jpg",
+    "thumb": "/materials/post10_thumb.jpg",
+    "legenda": "⚡ Impulsione seus resultados AGORA! Cadastre-se e ganhe créditos grátis. #cta #uptech"
+  },
+  {
+    "id": 11,
+    "tipo": "imagem",
+    "titulo": "Chamada para Ação - WhatsApp",
+    "categoria": "Instagram Feed",
+    "tags": ["whatsapp", "cta"],
+    "image": "/materials/post11_full.jpg",
+    "thumb": "/materials/post11_thumb.jpg",
+    "legenda": "📲 Fale com nosso time agora pelo WhatsApp! Atendimento rápido e humanizado. #whatsapp #uptech"
+  },
+  {
+    "id": 12,
+    "tipo": "imagem",
+    "titulo": "Depoimento Cliente - 5 Estrelas",
+    "categoria": "Instagram Stories",
+    "tags": ["depoimento", "avaliacao"],
+    "image": "/materials/post12_full.jpg",
+    "thumb": "/materials/post12_thumb.jpg",
+    "legenda": "⭐⭐⭐⭐⭐ Nossos clientes aprovam! Veja o que estão falando da Uptech. #depoimento #uptech"
+  },
+  {
+    "id": 13,
+    "tipo": "imagem",
+    "titulo": "Tutorial - Como Começar",
+    "categoria": "Instagram Feed",
+    "tags": ["tutorial", "onboarding"],
+    "image": "/materials/post13_full.jpg",
+    "thumb": "/materials/post13_thumb.jpg",
+    "legenda": "📚 Tutorial completo: Como começar na Uptech em 3 passos simples! #tutorial #uptech"
+  },
+  {
+    "id": 14,
+    "tipo": "imagem",
+    "titulo": "Dica - Melhor Horário para Enviar",
+    "categoria": "Instagram Feed",
+    "tags": ["dica", "horario"],
+    "image": "/materials/post14_full.jpg",
+    "thumb": "/materials/post14_thumb.jpg",
+    "legenda": "⏰ Dica de ouro: Descubra o melhor horário para enviar suas campanhas! #dicas #uptech"
+  },
+  {
+    "id": 15,
+    "tipo": "imagem",
+    "titulo": "Estatísticas - Crescimento 2024",
+    "categoria": "Instagram Feed",
+    "tags": ["estatisticas", "crescimento"],
+    "image": "/materials/post15_full.jpg",
+    "thumb": "/materials/post15_thumb.jpg",
+    "legenda": "📈 2024 foi nosso melhor ano! +10.000 clientes satisfeitos. #estatisticas #uptech"
+  },
+  {
+    "id": 16,
+    "tipo": "imagem",
+    "titulo": "Webinar - Marketing Digital",
+    "categoria": "Instagram Stories",
+    "tags": ["webinar", "evento"],
+    "image": "/materials/post16_full.jpg",
+    "thumb": "/materials/post16_thumb.jpg",
+    "legenda": "🎥 Webinar gratuito: Estratégias de Marketing Digital que funcionam! #webinar #uptech"
+  },
+  {
+    "id": 17,
+    "tipo": "imagem",
+    "titulo": "Comparação - Antes e Depois",
+    "categoria": "Instagram Feed",
+    "tags": ["comparacao", "resultados"],
+    "image": "/materials/post17_full.jpg",
+    "thumb": "/materials/post17_thumb.jpg",
+    "legenda": "🔄 Antes e depois: Veja a transformação dos nossos clientes! #transformacao #uptech"
+  },
+  {
+    "id": 18,
+    "tipo": "imagem",
+    "titulo": "FAQ - Perguntas Frequentes",
+    "categoria": "Instagram Feed",
+    "tags": ["faq", "duvidas"],
+    "image": "/materials/post18_full.jpg",
+    "thumb": "/materials/post18_thumb.jpg",
+    "legenda": "❓ Tire suas dúvidas! Confira as perguntas mais frequentes sobre a Uptech. #faq #uptech"
+  },
+  {
+    "id": 19,
+    "tipo": "imagem",
+    "titulo": "Integração - APIs Disponíveis",
+    "categoria": "Instagram Feed",
+    "tags": ["integracao", "api"],
+    "image": "/materials/post19_full.jpg",
+    "thumb": "/materials/post19_thumb.jpg",
+    "legenda": "🔗 Integre facilmente com suas ferramentas favoritas! API completa e documentada. #integracao #uptech"
+  },
+  {
+    "id": 20,
+    "tipo": "imagem",
+    "titulo": "Segurança - Dados Protegidos",
+    "categoria": "Instagram Stories",
+    "tags": ["seguranca", "lgpd"],
+    "image": "/materials/post20_full.jpg",
+    "thumb": "/materials/post20_thumb.jpg",
+    "legenda": "🔒 Seus dados 100% seguros! Conformidade total com LGPD. #seguranca #uptech"
+  },
+  {
+    "id": 21,
+    "tipo": "imagem",
+    "titulo": "Suporte 24/7 - Sempre Online",
+    "categoria": "Instagram Feed",
+    "tags": ["suporte", "atendimento"],
+    "image": "/materials/post21_full.jpg",
+    "thumb": "/materials/post21_thumb.jpg",
+    "legenda": "🆘 Suporte 24/7 sempre disponível! Estamos aqui para você. #suporte #uptech"
+  },
+  {
+    "id": 22,
+    "tipo": "imagem",
+    "titulo": "Dashboard - Relatórios em Tempo Real",
+    "categoria": "Instagram Feed",
+    "tags": ["dashboard", "relatorios"],
+    "image": "/materials/post22_full.jpg",
+    "thumb": "/materials/post22_thumb.jpg",
+    "legenda": "📊 Dashboard completo com relatórios em tempo real! Acompanhe tudo de perto. #dashboard #uptech"
+  },
+  {
+    "id": 23,
+    "tipo": "imagem",
+    "titulo": "Mobile App - Disponível Agora",
+    "categoria": "Instagram Stories",
+    "tags": ["mobile", "app"],
+    "image": "/materials/post23_full.jpg",
+    "thumb": "/materials/post23_thumb.jpg",
+    "legenda": "📱 App mobile disponível! Gerencie suas campanhas de qualquer lugar. #mobile #uptech"
+  },
+  {
+    "id": 24,
+    "tipo": "imagem",
+    "titulo": "Templates Prontos - Use Já",
+    "categoria": "Instagram Feed",
+    "tags": ["templates", "modelos"],
+    "image": "/materials/post24_full.jpg",
+    "thumb": "/materials/post24_thumb.jpg",
+    "legenda": "📝 Templates prontos para você usar! Economize tempo e aumente conversão. #templates #uptech"
+  },
+  {
+    "id": 25,
+    "tipo": "imagem",
+    "titulo": "Parceria - Novos Benefícios",
+    "categoria": "Instagram Feed",
+    "tags": ["parceria", "beneficios"],
+    "image": "/materials/post25_full.jpg",
+    "thumb": "/materials/post25_thumb.jpg",
+    "legenda": "🤝 Nova parceria! Benefícios exclusivos para nossos clientes. #parceria #uptech"
+  },
+  {
+    "id": 26,
+    "tipo": "imagem",
+    "titulo": "Teste Grátis - 7 Dias",
+    "categoria": "Instagram Stories",
+    "tags": ["teste", "gratis"],
+    "image": "/materials/post26_full.jpg",
+    "thumb": "/materials/post26_thumb.jpg",
+    "legenda": "🎁 Teste grátis por 7 dias! Sem compromisso, sem cartão de crédito. #testegratis #uptech",
+    "destaque": true
+  },
+  {
+    "id": 27,
+    "tipo": "imagem",
+    "titulo": "Desconto Progressivo - Quanto Mais, Menos Paga",
+    "categoria": "Instagram Feed",
+    "tags": ["desconto", "promo"],
+    "image": "/materials/post27_full.jpg",
+    "thumb": "/materials/post27_thumb.jpg",
+    "legenda": "💰 Desconto progressivo! Quanto mais usar, menos paga. #desconto #uptech"
+  },
+  {
+    "id": 28,
+    "tipo": "imagem",
+    "titulo": "Aniversário da Empresa - 5 Anos",
+    "categoria": "Instagram Feed",
+    "tags": ["aniversario", "comemoracao"],
+    "image": "/materials/post28_full.jpg",
+    "thumb": "/materials/post28_thumb.jpg",
+    "legenda": "🎉 5 anos transformando empresas! Obrigado por fazer parte dessa história. #aniversario #uptech"
+  },
+  {
+    "id": 29,
+    "tipo": "imagem",
+    "titulo": "Segmentação Avançada - Público Certo",
+    "categoria": "Instagram Feed",
+    "tags": ["segmentacao", "publico"],
+    "image": "/materials/post29_full.jpg",
+    "thumb": "/materials/post29_thumb.jpg",
+    "legenda": "🎯 Segmentação avançada: Atinja o público certo na hora certa! #segmentacao #uptech"
+  },
+  {
+    "id": 30,
+    "tipo": "imagem",
+    "titulo": "Campanha Sazonal - Volta às Aulas",
+    "categoria": "Instagram Stories",
+    "tags": ["sazonal", "voltaasaulas"],
+    "image": "/materials/post30_full.jpg",
+    "thumb": "/materials/post30_thumb.jpg",
+    "legenda": "🎒 Volta às aulas com promoções especiais! Prepare sua empresa para a alta temporada. #voltaasaulas #uptech"
+  },
+  {
+    "id": 31,
+    "tipo": "imagem",
+    "titulo": "Carnaval - Promoção Especial",
+    "categoria": "Instagram Feed",
+    "tags": ["carnaval", "promo"],
+    "image": "/materials/post31_full.jpg",
+    "thumb": "/materials/post31_thumb.jpg",
+    "legenda": "🎭 Carnaval Uptech! Festa de descontos para sua empresa brilhar. #carnaval #uptech"
+  },
+  {
+    "id": 32,
+    "tipo": "imagem",
+    "titulo": "Dia das Mães - Campanha Especial",
+    "categoria": "Instagram Feed",
+    "tags": ["diadasmaes", "promo"],
+    "image": "/materials/post32_full.jpg",
+    "thumb": "/materials/post32_thumb.jpg",
+    "legenda": "💐 Dia das Mães: Aumente suas vendas com nossas campanhas especiais! #diadasmaes #uptech"
+  },
+  {
+    "id": 33,
+    "tipo": "imagem",
+    "titulo": "Dia dos Pais - Oferta Imperdível",
+    "categoria": "Instagram Stories",
+    "tags": ["diadospais", "promo"],
+    "image": "/materials/post33_full.jpg",
+    "thumb": "/materials/post33_thumb.jpg",
+    "legenda": "👔 Dia dos Pais: Oferta imperdível para você alcançar mais clientes! #diadospais #uptech"
+  },
+  {
+    "id": 34,
+    "tipo": "imagem",
+    "titulo": "Dia do Consumidor - Super Desconto",
+    "categoria": "Instagram Feed",
+    "tags": ["diadoconsumidor", "promo"],
+    "image": "/materials/post34_full.jpg",
+    "thumb": "/materials/post34_thumb.jpg",
+    "legenda": "🛒 Dia do Consumidor com super descontos! Aproveite agora. #diadoconsumidor #uptech"
+  },
+  {
+    "id": 35,
+    "tipo": "imagem",
+    "titulo": "Cyber Monday - Mega Promoção",
+    "categoria": "Instagram Feed",
+    "tags": ["cybermonday", "promo"],
+    "image": "/materials/post35_full.jpg",
+    "thumb": "/materials/post35_thumb.jpg",
+    "legenda": "💻 Cyber Monday Uptech! Mega promoção online. Corre! #cybermonday #uptech"
+  },
+  {
+    "id": 36,
+    "tipo": "imagem",
+    "titulo": "Lançamento de Feature - Agendamento",
+    "categoria": "Instagram Stories",
+    "tags": ["lancamento", "feature"],
+    "image": "/materials/post36_full.jpg",
+    "thumb": "/materials/post36_thumb.jpg",
+    "legenda": "🚀 Nova funcionalidade: Agendamento automático de campanhas! #novidade #uptech"
+  },
+  {
+    "id": 37,
+    "tipo": "imagem",
+    "titulo": "Lançamento de Feature - Relatório Avançado",
+    "categoria": "Instagram Feed",
+    "tags": ["lancamento", "relatorio"],
+    "image": "/materials/post37_full.jpg",
+    "thumb": "/materials/post37_thumb.jpg",
+    "legenda": "📊 Relatórios avançados agora disponíveis! Análise completa dos seus resultados. #relatorios #uptech"
+  },
+  {
+    "id": 38,
+    "tipo": "imagem",
+    "titulo": "Economia - Reduza Custos",
+    "categoria": "Instagram Feed",
+    "tags": ["economia", "custos"],
+    "image": "/materials/post38_full.jpg",
+    "thumb": "/materials/post38_thumb.jpg",
+    "legenda": "💵 Reduza custos em até 70% com a Uptech! Invista inteligente. #economia #uptech"
+  },
+  {
+    "id": 39,
+    "tipo": "imagem",
+    "titulo": "Certificações - ISO e Compliance",
+    "categoria": "Instagram Feed",
+    "tags": ["certificacao", "iso"],
+    "image": "/materials/post39_full.jpg",
+    "thumb": "/materials/post39_thumb.jpg",
+    "legenda": "🏆 Certificações ISO e compliance total! Qualidade garantida. #certificacao #uptech"
+  },
+  {
+    "id": 40,
+    "tipo": "imagem",
+    "titulo": "Time - Conheça Nossa Equipe",
+    "categoria": "Instagram Stories",
+    "tags": ["time", "equipe"],
+    "image": "/materials/post40_full.jpg",
+    "thumb": "/materials/post40_thumb.jpg",
+    "legenda": "👥 Conheça o time que faz a Uptech acontecer! Pessoas incríveis por trás dos resultados. #time #uptech"
+  },
+  {
+    "id": 41,
+    "tipo": "imagem",
+    "titulo": "Vagas Abertas - Junte-se a Nós",
+    "categoria": "Instagram Feed",
+    "tags": ["vagas", "trabalhe"],
+    "image": "/materials/post41_full.jpg",
+    "thumb": "/materials/post41_thumb.jpg",
+    "legenda": "💼 Vagas abertas! Venha fazer parte do time Uptech. #vagas #uptech"
+  },
+  {
+    "id": 42,
+    "tipo": "imagem",
+    "titulo": "Cultura da Empresa - Valores",
+    "categoria": "Instagram Feed",
+    "tags": ["cultura", "valores"],
+    "image": "/materials/post42_full.jpg",
+    "thumb": "/materials/post42_thumb.jpg",
+    "legenda": "💙 Nossos valores: Inovação, Transparência e Resultados. #cultura #uptech"
+  },
+  {
+    "id": 43,
+    "tipo": "imagem",
+    "titulo": "Escritório - Tour Virtual",
+    "categoria": "Instagram Stories",
+    "tags": ["escritorio", "tour"],
+    "image": "/materials/post43_full.jpg",
+    "thumb": "/materials/post43_thumb.jpg",
+    "legenda": "🏢 Tour virtual pelo nosso escritório! Vem conhecer. #escritorio #uptech"
+  },
+  {
+    "id": 44,
+    "tipo": "imagem",
+    "titulo": "Prêmio - Melhor Plataforma 2024",
+    "categoria": "Instagram Feed",
+    "tags": ["premio", "reconhecimento"],
+    "image": "/materials/post44_full.jpg",
+    "thumb": "/materials/post44_thumb.jpg",
+    "legenda": "🏆 Eleita melhor plataforma de SMS 2024! Obrigado pelo reconhecimento. #premio #uptech"
+  },
+  {
+    "id": 45,
+    "tipo": "imagem",
+    "titulo": "Responsabilidade Social - Projeto",
+    "categoria": "Instagram Feed",
+    "tags": ["social", "projeto"],
+    "image": "/materials/post45_full.jpg",
+    "thumb": "/materials/post45_thumb.jpg",
+    "legenda": "🌍 Responsabilidade social: Conheça nosso projeto de impacto. #responsabilidadesocial #uptech"
+  },
+  {
+    "id": 46,
+    "tipo": "imagem",
+    "titulo": "Sustentabilidade - Empresa Verde",
+    "categoria": "Instagram Stories",
+    "tags": ["sustentabilidade", "verde"],
+    "image": "/materials/post46_full.jpg",
+    "thumb": "/materials/post46_thumb.jpg",
+    "legenda": "♻️ Empresa sustentável! Tecnologia com responsabilidade ambiental. #sustentabilidade #uptech"
+  },
+  {
+    "id": 47,
+    "tipo": "imagem",
+    "titulo": "Comparativo - Uptech vs Concorrentes",
+    "categoria": "Instagram Feed",
+    "tags": ["comparativo", "diferencial"],
+    "image": "/materials/post47_full.jpg",
+    "thumb": "/materials/post47_thumb.jpg",
+    "legenda": "⚖️ Comparativo: Veja por que a Uptech é a melhor escolha! #comparativo #uptech"
+  },
+  {
+    "id": 48,
+    "tipo": "imagem",
+    "titulo": "Garantia - Satisfação ou Dinheiro de Volta",
+    "categoria": "Instagram Feed",
+    "tags": ["garantia", "satisfacao"],
+    "image": "/materials/post48_full.jpg",
+    "thumb": "/materials/post48_thumb.jpg",
+    "legenda": "✅ Garantia de satisfação ou seu dinheiro de volta! Teste sem riscos. #garantia #uptech"
+  },
+  {
+    "id": 49,
+    "tipo": "imagem",
+    "titulo": "Urgência - Últimas Vagas Promoção",
+    "categoria": "Instagram Stories",
+    "tags": ["urgencia", "limitado"],
+    "image": "/materials/post49_full.jpg",
+    "thumb": "/materials/post49_thumb.jpg",
+    "legenda": "⏰ ÚLTIMAS VAGAS! Promoção limitada, corre antes que acabe! #urgencia #uptech",
+    "destaque": true
+  },
+  {
+    "id": 50,
+    "tipo": "imagem",
+    "titulo": "Gratidão - Obrigado Clientes",
+    "categoria": "Instagram Feed",
+    "tags": ["gratidao", "obrigado"],
+    "image": "/materials/post50_full.jpg",
+    "thumb": "/materials/post50_thumb.jpg",
+    "legenda": "🙏 Obrigado por confiar na Uptech! Vocês são a razão do nosso sucesso. #gratidao #uptech"
+  },
+  {
+    "id": 101,
+    "tipo": "video",
+    "titulo": "Reels - Promoção de Créditos",
+    "categoria": "Vídeos Reels (9:16)",
+    "tags": ["reels", "promo", "sms"],
+    "video": "https://www.pexels.com/video/854100",
+    "thumb": "/materials/video01_thumb.jpg",
+    "legenda": "🚀 Turbine sua estratégia com SMS profissional! Créditos com desconto exclusivo HOJE! #reels #uptech"
+  },
+  {
+    "id": 102,
+    "tipo": "video",
+    "titulo": "Demonstração - Plataforma Uptech",
+    "categoria": "Vídeos Institucionais (16:9)",
+    "tags": ["demo", "plataforma"],
+    "video": "https://www.pexels.com/video/854101",
+    "thumb": "/materials/video02_thumb.jpg",
+    "legenda": "📱 Veja como é fácil usar a Uptech! Demonstração completa da plataforma. #demo #uptech"
+  },
+  {
+    "id": 103,
+    "tipo": "video",
+    "titulo": "Vídeo Institucional - Quem Somos",
+    "categoria": "Vídeos Institucionais (16:9)",
+    "tags": ["institucional", "apresentacao"],
+    "video": "https://www.pexels.com/video/854102",
+    "thumb": "/materials/video03_thumb.jpg",
+    "legenda": "🏢 Conheça a Uptech! A plataforma que está transformando o marketing digital. #institucional #uptech"
+  },
+  {
+    "id": 104,
+    "tipo": "video",
+    "titulo": "Promoção da Semana - Black Friday",
+    "categoria": "Vídeos Reels (9:16)",
+    "tags": ["promo", "blackfriday"],
+    "video": "https://www.pexels.com/video/854103",
+    "thumb": "/materials/video04_thumb.jpg",
+    "legenda": "🔥 Promoção da semana! Black Friday Uptech com descontos imperdíveis! #blackfriday #uptech"
+  },
+  {
+    "id": 105,
+    "tipo": "video",
+    "titulo": "Tutorial - Como Criar Campanha",
+    "categoria": "Vídeos TikTok (9:16)",
+    "tags": ["tutorial", "passo-a-passo"],
+    "video": "https://www.pexels.com/video/854104",
+    "thumb": "/materials/video05_thumb.jpg",
+    "legenda": "📚 Tutorial: Como criar sua primeira campanha em 3 passos! #tutorial #uptech"
+  },
+  {
+    "id": 106,
+    "tipo": "video",
+    "titulo": "Depoimento Cliente - Case de Sucesso",
+    "categoria": "Vídeos Quadrados (1:1)",
+    "tags": ["depoimento", "case"],
+    "video": "https://www.pexels.com/video/854105",
+    "thumb": "/materials/video06_thumb.jpg",
+    "legenda": "⭐ Depoimento real: Cliente aumentou vendas em 300%! #depoimento #uptech"
+  },
+  {
+    "id": 107,
+    "tipo": "video",
+    "titulo": "Chamada Comercial - CTA Forte",
+    "categoria": "Vídeos Reels (9:16)",
+    "tags": ["comercial", "cta"],
+    "video": "https://www.pexels.com/video/854106",
+    "thumb": "/materials/video07_thumb.jpg",
+    "legenda": "💥 Não perca tempo! Cadastre-se AGORA e ganhe créditos grátis! #cta #uptech"
+  },
+  {
+    "id": 108,
+    "tipo": "video",
+    "titulo": "Behind the Scenes - Bastidores",
+    "categoria": "Vídeos TikTok (9:16)",
+    "tags": ["bastidores", "bts"],
+    "video": "https://www.pexels.com/video/854107",
+    "thumb": "/materials/video08_thumb.jpg",
+    "legenda": "🎬 Bastidores: Como produzimos nossas campanhas! #bts #uptech"
+  },
+  {
+    "id": 109,
+    "tipo": "video",
+    "titulo": "Lançamento - Nova Funcionalidade",
+    "categoria": "Vídeos Quadrados (1:1)",
+    "tags": ["lancamento", "novidade"],
+    "video": "https://www.pexels.com/video/854108",
+    "thumb": "/materials/video09_thumb.jpg",
+    "legenda": "🚀 Lançamento! Nova funcionalidade de agendamento disponível! #lancamento #uptech"
+  },
+  {
+    "id": 110,
+    "tipo": "video",
+    "titulo": "Dica Rápida - Aumente Conversão",
+    "categoria": "Vídeos TikTok (9:16)",
+    "tags": ["dica", "conversao"],
+    "video": "https://www.pexels.com/video/854109",
+    "thumb": "/materials/video10_thumb.jpg",
+    "legenda": "💡 Dica rápida: Aumente sua conversão em 50% com essa estratégia! #dica #uptech"
+  },
+  {
+    "id": 111,
+    "tipo": "video",
+    "titulo": "Webinar Gravado - Marketing Digital",
+    "categoria": "Vídeos Institucionais (16:9)",
+    "tags": ["webinar", "educacao"],
+    "video": "https://www.pexels.com/video/854110",
+    "thumb": "/materials/video11_thumb.jpg",
+    "legenda": "🎓 Webinar completo sobre marketing digital! Assista agora. #webinar #uptech"
+  },
+  {
+    "id": 112,
+    "tipo": "video",
+    "titulo": "Comparativo Antes e Depois",
+    "categoria": "Vídeos Reels (9:16)",
+    "tags": ["comparativo", "transformacao"],
+    "video": "https://www.pexels.com/video/854111",
+    "thumb": "/materials/video12_thumb.jpg",
+    "legenda": "🔄 Antes e depois usando Uptech! Transformação comprovada. #transformacao #uptech"
+  },
+  {
+    "id": 113,
+    "tipo": "video",
+    "titulo": "Natal - Campanha Especial",
+    "categoria": "Vídeos Quadrados (1:1)",
+    "tags": ["natal", "sazonal"],
+    "video": "https://www.pexels.com/video/854112",
+    "thumb": "/materials/video13_thumb.jpg",
+    "legenda": "🎄 Campanha de Natal especial! Presentes para sua empresa crescer. #natal #uptech"
+  },
+  {
+    "id": 114,
+    "tipo": "video",
+    "titulo": "Ano Novo - Metas 2025",
+    "categoria": "Vídeos Reels (9:16)",
+    "tags": ["anonovo", "metas"],
+    "video": "https://www.pexels.com/video/854113",
+    "thumb": "/materials/video14_thumb.jpg",
+    "legenda": "🎆 2025 chegando! Defina suas metas com a Uptech ao seu lado. #anonovo #uptech"
+  },
+  {
+    "id": 115,
+    "tipo": "video",
+    "titulo": "Integração - API Completa",
+    "categoria": "Vídeos Institucionais (16:9)",
+    "tags": ["integracao", "api"],
+    "video": "https://www.pexels.com/video/854114",
+    "thumb": "/materials/video15_thumb.jpg",
+    "legenda": "🔗 API completa e fácil de integrar! Conecte suas ferramentas. #api #uptech"
+  },
+  {
+    "id": 116,
+    "tipo": "video",
+    "titulo": "Suporte 24/7 - Estamos Aqui",
+    "categoria": "Vídeos TikTok (9:16)",
+    "tags": ["suporte", "atendimento"],
+    "video": "https://www.pexels.com/video/854115",
+    "thumb": "/materials/video16_thumb.jpg",
+    "legenda": "🆘 Suporte 24/7! Estamos sempre prontos para te ajudar. #suporte #uptech"
+  },
+  {
+    "id": 117,
+    "tipo": "video",
+    "titulo": "Dashboard em Ação - Tempo Real",
+    "categoria": "Vídeos Quadrados (1:1)",
+    "tags": ["dashboard", "demo"],
+    "video": "https://www.pexels.com/video/854116",
+    "thumb": "/materials/video17_thumb.jpg",
+    "legenda": "📊 Dashboard em tempo real! Acompanhe tudo de perto. #dashboard #uptech"
+  },
+  {
+    "id": 118,
+    "tipo": "video",
+    "titulo": "Prêmio - Melhor Plataforma",
+    "categoria": "Vídeos Reels (9:16)",
+    "tags": ["premio", "reconhecimento"],
+    "video": "https://www.pexels.com/video/854117",
+    "thumb": "/materials/video18_thumb.jpg",
+    "legenda": "🏆 Eleita melhor plataforma de SMS! Obrigado pelo reconhecimento. #premio #uptech"
+  },
+  {
+    "id": 119,
+    "tipo": "video",
+    "titulo": "Time Uptech - Conheça a Equipe",
+    "categoria": "Vídeos Institucionais (16:9)",
+    "tags": ["time", "equipe"],
+    "video": "https://www.pexels.com/video/854118",
+    "thumb": "/materials/video19_thumb.jpg",
+    "legenda": "👥 Conheça o time por trás da Uptech! Pessoas incríveis. #time #uptech"
+  },
+  {
+    "id": 120,
+    "tipo": "video",
+    "titulo": "Urgência - Últimas Horas Promoção",
+    "categoria": "Vídeos TikTok (9:16)",
+    "tags": ["urgencia", "promo"],
+    "video": "https://www.pexels.com/video/854119",
+    "thumb": "/materials/video20_thumb.jpg",
+    "legenda": "⏰ ÚLTIMAS HORAS! Promoção acaba hoje à meia-noite! #urgencia #uptech"
+  }
+]
