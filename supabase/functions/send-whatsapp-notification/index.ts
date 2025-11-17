@@ -26,10 +26,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Buscar informações do restaurante e token WhatsApp
+    // Buscar informações do restaurante e configuração WhatsApp
     const { data: restaurant, error: restaurantError } = await supabase
       .from('restaurants')
-      .select('name, whatsapp_api_token')
+      .select('name, whatsapp_evolution_url, whatsapp_evolution_instance, whatsapp_connected')
       .eq('id', restaurantId)
       .single();
 
@@ -64,11 +64,11 @@ serve(async (req) => {
       );
     }
 
-    // Verificar se o token do WhatsApp está configurado
-    if (!restaurant.whatsapp_api_token) {
-      console.log('WhatsApp API token not configured');
+    // Verificar se o WhatsApp está conectado
+    if (!restaurant.whatsapp_connected || !restaurant.whatsapp_evolution_url || !restaurant.whatsapp_evolution_instance) {
+      console.log('WhatsApp not connected or not configured');
       return new Response(
-        JSON.stringify({ message: 'Token do WhatsApp não configurado' }),
+        JSON.stringify({ message: 'WhatsApp não conectado ou não configurado' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -89,21 +89,16 @@ serve(async (req) => {
     // Montar mensagem
     const message = `*${restaurant.name}*\n\n${statusMessage}\n\n*Pedido:* #${orderId.substring(0, 8)}\n*Cliente:* ${order.customer_name}\n*Total:* R$ ${order.total_amount.toFixed(2)}\n\nAcompanhe seu pedido: ${supabaseUrl.replace('supabase.co', 'lovable.app')}/pedido?id=${orderId}`;
 
-    // Enviar mensagem via WhatsApp Business API
-    // Usando formato genérico - ajustar conforme provider (Twilio, 360Dialog, etc)
-    const whatsappResponse = await fetch('https://graph.facebook.com/v17.0/YOUR_PHONE_ID/messages', {
+    // Enviar mensagem via Evolution API
+    const phoneNumber = order.customer_phone.replace(/\D/g, '');
+    const whatsappResponse = await fetch(`${restaurant.whatsapp_evolution_url}/message/sendText/${restaurant.whatsapp_evolution_instance}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${restaurant.whatsapp_api_token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messaging_product: 'whatsapp',
-        to: order.customer_phone.replace(/\D/g, ''),
-        type: 'text',
-        text: {
-          body: message
-        }
+        number: `${phoneNumber}@s.whatsapp.net`,
+        text: message
       })
     });
 

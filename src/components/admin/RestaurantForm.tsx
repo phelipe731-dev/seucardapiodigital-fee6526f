@@ -25,7 +25,6 @@ export function RestaurantForm() {
     prep_time_max: 45,
     working_days: ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
     accepts_orders_override: null as boolean | null,
-    whatsapp_api_token: "",
   });
 
   useEffect(() => {
@@ -61,7 +60,6 @@ export function RestaurantForm() {
           prep_time_max: data.prep_time_max || 45,
           working_days: data.working_days || ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
           accepts_orders_override: data.accepts_orders_override,
-          whatsapp_api_token: data.whatsapp_api_token || "",
         });
       }
     } catch (error: any) {
@@ -302,20 +300,6 @@ export function RestaurantForm() {
                 Sempre Fechado
               </Button>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="whatsapp_api_token">Token API WhatsApp (Opcional)</Label>
-            <Input
-              id="whatsapp_api_token"
-              type="password"
-              placeholder="Cole aqui o token da API do WhatsApp Business"
-              value={formData.whatsapp_api_token}
-              onChange={(e) => setFormData({ ...formData, whatsapp_api_token: e.target.value })}
-            />
-            <p className="text-sm text-muted-foreground">
-              Configure para enviar notificações automáticas de status do pedido via WhatsApp
-            </p>
           </div>
 
           <Button type="submit" variant="gradient" disabled={loading} className="w-full md:w-auto">

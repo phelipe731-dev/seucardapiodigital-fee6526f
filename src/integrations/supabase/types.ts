@@ -363,7 +363,10 @@ export type Database = {
           theme_secondary_color: string | null
           updated_at: string | null
           whatsapp: string
-          whatsapp_api_token: string | null
+          whatsapp_connected: boolean | null
+          whatsapp_evolution_instance: string | null
+          whatsapp_evolution_url: string | null
+          whatsapp_phone: string | null
           working_days: string[] | null
         }
         Insert: {
@@ -386,7 +389,10 @@ export type Database = {
           theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp: string
-          whatsapp_api_token?: string | null
+          whatsapp_connected?: boolean | null
+          whatsapp_evolution_instance?: string | null
+          whatsapp_evolution_url?: string | null
+          whatsapp_phone?: string | null
           working_days?: string[] | null
         }
         Update: {
@@ -409,7 +415,10 @@ export type Database = {
           theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp?: string
-          whatsapp_api_token?: string | null
+          whatsapp_connected?: boolean | null
+          whatsapp_evolution_instance?: string | null
+          whatsapp_evolution_url?: string | null
+          whatsapp_phone?: string | null
           working_days?: string[] | null
         }
         Relationships: []
