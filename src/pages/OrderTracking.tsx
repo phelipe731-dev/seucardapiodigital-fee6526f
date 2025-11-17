@@ -12,6 +12,7 @@ interface Order {
   total_amount: number;
   status: string;
   created_at: string;
+  restaurant_id: string;
 }
 
 export default function OrderTracking() {
@@ -143,7 +144,7 @@ export default function OrderTracking() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground mb-4">Pedido não encontrado</p>
-            <Button onClick={() => navigate("/menu")}>Voltar ao Cardápio</Button>
+            <Button onClick={() => navigate("/")}>Voltar ao Início</Button>
           </CardContent>
         </Card>
       </div>
@@ -198,7 +199,7 @@ export default function OrderTracking() {
                 <Button 
                   variant="gradient" 
                   className="w-full"
-                  onClick={() => navigate("/menu")}
+                  onClick={() => navigate(`/menu/${order.restaurant_id}`)}
                 >
                   Fazer Novo Pedido
                 </Button>
@@ -210,7 +211,7 @@ export default function OrderTracking() {
         <div className="text-center">
           <Button 
             variant="outline" 
-            onClick={() => navigate("/menu")}
+            onClick={() => navigate(`/menu/${order.restaurant_id}`)}
           >
             Voltar ao Cardápio
           </Button>

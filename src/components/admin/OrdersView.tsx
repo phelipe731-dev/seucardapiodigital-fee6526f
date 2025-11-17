@@ -16,6 +16,7 @@ interface Order {
   notes: string;
   status: string;
   created_at: string;
+  restaurant_id: string;
 }
 
 export function OrdersView() {
@@ -141,12 +142,30 @@ export function OrdersView() {
 
   const updateOrderStatus = async (orderId: string, status: string) => {
     try {
+      const orderToUpdate = orders.find(o => o.id === orderId);
+      if (!orderToUpdate) return;
+
       const { error } = await supabase
         .from("orders")
         .update({ status })
         .eq("id", orderId);
 
       if (error) throw error;
+      
+      // Enviar notificação via WhatsApp
+      try {
+        await supabase.functions.invoke('send-whatsapp-notification', {
+          body: {
+            orderId,
+            restaurantId: orderToUpdate.restaurant_id,
+            newStatus: status
+          }
+        });
+      } catch (whatsappError) {
+        console.log('Erro ao enviar notificação WhatsApp:', whatsappError);
+        // Não bloqueia a atualização do status se WhatsApp falhar
+      }
+
       toast.success("Status atualizado!");
       loadOrders();
     } catch (error: any) {

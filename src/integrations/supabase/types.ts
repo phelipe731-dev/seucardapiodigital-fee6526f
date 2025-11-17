@@ -363,6 +363,7 @@ export type Database = {
           theme_secondary_color: string | null
           updated_at: string | null
           whatsapp: string
+          whatsapp_api_token: string | null
           working_days: string[] | null
         }
         Insert: {
@@ -385,6 +386,7 @@ export type Database = {
           theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp: string
+          whatsapp_api_token?: string | null
           working_days?: string[] | null
         }
         Update: {
@@ -407,6 +409,7 @@ export type Database = {
           theme_secondary_color?: string | null
           updated_at?: string | null
           whatsapp?: string
+          whatsapp_api_token?: string | null
           working_days?: string[] | null
         }
         Relationships: []
