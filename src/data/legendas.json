@@ -1,0 +1,602 @@
+[
+  {
+    "id": 1,
+    "categoria": "Institucional",
+    "texto": "🏢 A Uptech é a plataforma líder em SMS marketing no Brasil. Conecte-se com seus clientes de forma direta e eficiente. #uptech #smsmarketing #plataforma"
+  },
+  {
+    "id": 2,
+    "categoria": "Institucional",
+    "texto": "💙 Nossos valores: Inovação constante, transparência total e resultados comprovados. Venha fazer parte dessa história! #valores #uptech #missao"
+  },
+  {
+    "id": 3,
+    "categoria": "Institucional",
+    "texto": "🌍 Presente em todo o Brasil, ajudamos empresas de todos os tamanhos a crescerem. Do pequeno ao grande negócio! #brasil #uptech #crescimento"
+  },
+  {
+    "id": 4,
+    "categoria": "Institucional",
+    "texto": "🏆 Eleita a melhor plataforma de SMS marketing 2024! Obrigado pela confiança de mais de 10.000 clientes. #premio #melhorplataforma #uptech"
+  },
+  {
+    "id": 5,
+    "categoria": "Institucional",
+    "texto": "👥 Time de especialistas dedicados ao seu sucesso. Suporte humanizado 24/7 sempre disponível. #time #suporte #uptech"
+  },
+  {
+    "id": 6,
+    "categoria": "Institucional",
+    "texto": "📈 5 anos transformando o marketing digital de milhares de empresas. E estamos apenas começando! #aniversario #trajetoria #uptech"
+  },
+  {
+    "id": 7,
+    "categoria": "Institucional",
+    "texto": "🔒 Segurança e privacidade são nossas prioridades. Certificações ISO e conformidade total com LGPD. #seguranca #lgpd #uptech"
+  },
+  {
+    "id": 8,
+    "categoria": "Institucional",
+    "texto": "♻️ Empresa sustentável e responsável. Tecnologia de ponta com consciência ambiental. #sustentabilidade #responsabilidade #uptech"
+  },
+  {
+    "id": 9,
+    "categoria": "Institucional",
+    "texto": "🎓 Educamos nossos clientes! Webinars gratuitos, tutoriais e conteúdos exclusivos para você dominar o SMS marketing. #educacao #webinar #uptech"
+  },
+  {
+    "id": 10,
+    "categoria": "Institucional",
+    "texto": "🌟 Transparência em primeiro lugar. Sem taxas ocultas, sem surpresas, sem letras miúdas. #transparencia #honestidade #uptech"
+  },
+  {
+    "id": 11,
+    "categoria": "Institucional",
+    "texto": "🚀 Inovação é nosso DNA. Atualizações constantes, novas funcionalidades e tecnologia de ponta. #inovacao #tecnologia #uptech"
+  },
+  {
+    "id": 12,
+    "categoria": "Institucional",
+    "texto": "🤝 Parceiros de sucesso! Trabalhamos com as maiores empresas do mercado. #parceiros #empresas #uptech"
+  },
+  {
+    "id": 13,
+    "categoria": "Institucional",
+    "texto": "📱 Plataforma 100% web e mobile. Gerencie suas campanhas de qualquer lugar, a qualquer hora. #mobile #web #uptech"
+  },
+  {
+    "id": 14,
+    "categoria": "Institucional",
+    "texto": "🔗 API completa e documentada. Integre facilmente com suas ferramentas favoritas. #api #integracao #uptech"
+  },
+  {
+    "id": 15,
+    "categoria": "Institucional",
+    "texto": "💼 Mais de 50 colaboradores dedicados ao seu sucesso. Equipe qualificada e apaixonada pelo que faz. #equipe #colaboradores #uptech"
+  },
+  {
+    "id": 16,
+    "categoria": "Institucional",
+    "texto": "🎯 Missão: Democratizar o acesso ao SMS marketing de qualidade para todas as empresas. #missao #proposito #uptech"
+  },
+  {
+    "id": 17,
+    "categoria": "Institucional",
+    "texto": "🏅 Certificações e reconhecimentos: ISO 9001, ISO 27001 e prêmio Melhor Plataforma 2024. #certificacoes #qualidade #uptech"
+  },
+  {
+    "id": 18,
+    "categoria": "Institucional",
+    "texto": "📊 Mais de 1 bilhão de mensagens enviadas com sucesso. Números que falam por si! #numeros #sucesso #uptech"
+  },
+  {
+    "id": 19,
+    "categoria": "Institucional",
+    "texto": "🙏 Gratidão define nossa relação com os clientes. Obrigado por fazerem parte dessa jornada! #gratidao #clientes #uptech"
+  },
+  {
+    "id": 20,
+    "categoria": "Institucional",
+    "texto": "🌈 Diversidade e inclusão fazem parte da nossa cultura. Time plural para resultados extraordinários! #diversidade #inclusao #uptech"
+  },
+  {
+    "id": 21,
+    "categoria": "Vendas",
+    "texto": "🔥 PROMOÇÃO RELÂMPAGO! 50% OFF em todos os planos. Só hoje! Não perca essa oportunidade única. #promocao #desconto #uptech"
+  },
+  {
+    "id": 22,
+    "categoria": "Vendas",
+    "texto": "💰 Planos a partir de R$ 49,90/mês. Comece pequeno, cresça grande! Sem compromisso, sem fidelidade. #planos #precos #uptech"
+  },
+  {
+    "id": 23,
+    "categoria": "Vendas",
+    "texto": "🎁 Teste GRÁTIS por 7 dias! Sem cartão de crédito, sem compromisso. Experimente todo o poder da Uptech. #testegratis #trial #uptech"
+  },
+  {
+    "id": 24,
+    "categoria": "Vendas",
+    "texto": "⏰ ÚLTIMAS HORAS! Promoção Black Friday acaba hoje à meia-noite. Garanta já seu desconto! #blackfriday #urgencia #uptech"
+  },
+  {
+    "id": 25,
+    "categoria": "Vendas",
+    "texto": "📦 BÔNUS EXCLUSIVO: Cadastre-se agora e ganhe 1000 créditos SMS grátis para começar! #bonus #gratis #uptech"
+  },
+  {
+    "id": 26,
+    "categoria": "Vendas",
+    "texto": "💎 Plano Premium com 30% OFF no primeiro mês. Recursos avançados por um preço incrível! #premium #oferta #uptech"
+  },
+  {
+    "id": 27,
+    "categoria": "Vendas",
+    "texto": "🚀 Migre agora e ganhe 50% de desconto permanente! Traga sua base e economize sempre. #migracao #desconto #uptech"
+  },
+  {
+    "id": 28,
+    "categoria": "Vendas",
+    "texto": "🎯 Plano Empresarial com condições especiais. Entre em contato e receba uma proposta personalizada. #empresarial #b2b #uptech"
+  },
+  {
+    "id": 29,
+    "categoria": "Vendas",
+    "texto": "✅ Garantia de 30 dias ou seu dinheiro de volta! Teste sem riscos, satisfação garantida. #garantia #semriscos #uptech"
+  },
+  {
+    "id": 30,
+    "categoria": "Vendas",
+    "texto": "🔄 Desconto progressivo: Quanto mais usar, menos paga! Economia automática para clientes fiéis. #descontoprogressivo #economia #uptech"
+  },
+  {
+    "id": 31,
+    "categoria": "Vendas",
+    "texto": "🎄 NATAL UPTECH! Planos anuais com 40% OFF + 3 meses grátis. Presente perfeito para sua empresa! #natal #oferta #uptech"
+  },
+  {
+    "id": 32,
+    "categoria": "Vendas",
+    "texto": "💳 Parcelamento em até 12x sem juros! Cresça agora, pague depois. Facilidade total. #parcelamento #facilitacao #uptech"
+  },
+  {
+    "id": 33,
+    "categoria": "Vendas",
+    "texto": "🏆 Combo imperdível: Plataforma + Consultoria por apenas R$ 399/mês. Invista no seu crescimento! #combo #consultoria #uptech"
+  },
+  {
+    "id": 34,
+    "categoria": "Vendas",
+    "texto": "⚡ Flash Sale! Próximas 100 assinaturas com 60% OFF. Corre que está acabando! #flashsale #limitado #uptech"
+  },
+  {
+    "id": 35,
+    "categoria": "Vendas",
+    "texto": "🎁 Indique um amigo e ganhe 1 mês grátis! Programa de indicação com benefícios para todos. #indicacao #bonus #uptech"
+  },
+  {
+    "id": 36,
+    "categoria": "Vendas",
+    "texto": "💵 Cashback de 20% em todas as recargas acima de R$ 500! Economize comprando mais. #cashback #economia #uptech"
+  },
+  {
+    "id": 37,
+    "categoria": "Vendas",
+    "texto": "🎯 Plano Starter GRÁTIS para pequenos negócios! Até 500 mensagens/mês sem pagar nada. #starter #gratis #uptech"
+  },
+  {
+    "id": 38,
+    "categoria": "Vendas",
+    "texto": "🔥 Cyber Monday: Maior promoção do ano! Todos os planos com 70% OFF. Aproveite! #cybermonday #megapromo #uptech"
+  },
+  {
+    "id": 39,
+    "categoria": "Vendas",
+    "texto": "📱 App mobile grátis incluído em todos os planos! Gerencie tudo na palma da sua mão. #mobile #app #uptech"
+  },
+  {
+    "id": 40,
+    "categoria": "Vendas",
+    "texto": "🌟 Upgrade para Premium e receba consultoria gratuita por 3 meses! Oferta por tempo limitado. #upgrade #consultoria #uptech"
+  },
+  {
+    "id": 41,
+    "categoria": "Conversão",
+    "texto": "📊 Aumente suas vendas em até 300%! Cases comprovados de clientes que transformaram seus resultados. #conversao #resultados #uptech"
+  },
+  {
+    "id": 42,
+    "categoria": "Conversão",
+    "texto": "🎯 Taxa de abertura de 98%! SMS é o canal com maior engajamento do mercado. Comece agora! #taxadeabertura #engajamento #uptech"
+  },
+  {
+    "id": 43,
+    "categoria": "Conversão",
+    "texto": "💰 ROI médio de 3800%! Invista pouco, ganhe muito. SMS marketing é o investimento mais rentável. #roi #investimento #uptech"
+  },
+  {
+    "id": 44,
+    "categoria": "Conversão",
+    "texto": "⚡ Resultados em até 3 minutos! 90% das mensagens são lidas nos primeiros minutos. Velocidade que converte. #velocidade #imediato #uptech"
+  },
+  {
+    "id": 45,
+    "categoria": "Conversão",
+    "texto": "📈 Recupere 40% dos carrinhos abandonados com SMS! Estratégia comprovada de recuperação de vendas. #carrinho #recuperacao #uptech"
+  },
+  {
+    "id": 46,
+    "categoria": "Conversão",
+    "texto": "🔔 Notificações que convertem! SMS tem 10x mais conversão que email marketing. Migre agora! #notificacoes #conversao #uptech"
+  },
+  {
+    "id": 47,
+    "categoria": "Conversão",
+    "texto": "🎁 Campanhas sazonais com 500% de ROI! Black Friday, Natal, Páscoa... Maximize seus resultados! #sazonal #campanhas #uptech"
+  },
+  {
+    "id": 48,
+    "categoria": "Conversão",
+    "texto": "💎 Segmentação inteligente = Mais conversão! Envie a mensagem certa para a pessoa certa no momento certo. #segmentacao #inteligencia #uptech"
+  },
+  {
+    "id": 49,
+    "categoria": "Conversão",
+    "texto": "📱 Mobile First! 95% dos brasileiros têm celular. Alcance TODOS os seus clientes com SMS. #mobile #alcance #uptech"
+  },
+  {
+    "id": 50,
+    "categoria": "Conversão",
+    "texto": "🚀 Automação que converte! Configure uma vez, venda sempre. Jornadas automáticas para cada cliente. #automacao #jornada #uptech"
+  },
+  {
+    "id": 51,
+    "categoria": "Conversão",
+    "texto": "🔥 Urgência e escassez em cada mensagem! Gatilhos mentais que fazem seu cliente comprar AGORA. #urgencia #gatilhos #uptech"
+  },
+  {
+    "id": 52,
+    "categoria": "Conversão",
+    "texto": "💡 A/B Testing integrado! Teste mensagens, horários e públicos. Otimize sempre para converter mais. #abtesting #otimizacao #uptech"
+  },
+  {
+    "id": 53,
+    "categoria": "Conversão",
+    "texto": "📊 Dashboard em tempo real! Acompanhe aberturas, cliques e conversões ao vivo. Dados que impulsionam vendas. #dashboard #metricas #uptech"
+  },
+  {
+    "id": 54,
+    "categoria": "Conversão",
+    "texto": "🎯 Links encurtados com tracking! Saiba exatamente quem clicou e comprou. Atribuição perfeita. #tracking #links #uptech"
+  },
+  {
+    "id": 55,
+    "categoria": "Conversão",
+    "texto": "💰 Reduza CAC em até 60%! SMS tem o menor custo por aquisição do mercado. Maximize seu lucro! #cac #custo #uptech"
+  },
+  {
+    "id": 56,
+    "categoria": "Conversão",
+    "texto": "🔄 Recompra automática! Lembre seus clientes na hora certa e aumente o lifetime value. #recompra #ltv #uptech"
+  },
+  {
+    "id": 57,
+    "categoria": "Conversão",
+    "texto": "⭐ Avaliações que vendem! Peça feedback por SMS e aumente suas vendas com prova social. #avaliacoes #social #uptech"
+  },
+  {
+    "id": 58,
+    "categoria": "Conversão",
+    "texto": "🎁 Cupons personalizados via SMS! Cada cliente recebe uma oferta única. Conversão garantida! #cupons #personalizacao #uptech"
+  },
+  {
+    "id": 59,
+    "categoria": "Conversão",
+    "texto": "📈 Escale sem limite! De 100 a 1 milhão de mensagens com a mesma facilidade. Cresça com segurança. #escala #crescimento #uptech"
+  },
+  {
+    "id": 60,
+    "categoria": "Conversão",
+    "texto": "💎 VIP desde o primeiro dia! Todos os clientes recebem atendimento premium. Sucesso garantido. #vip #premium #uptech"
+  },
+  {
+    "id": 61,
+    "categoria": "Engajamento",
+    "texto": "💬 Converse com seus clientes! SMS cria conexão real e duradoura com seu público. #conexao #relacionamento #uptech"
+  },
+  {
+    "id": 62,
+    "categoria": "Engajamento",
+    "texto": "🎉 Celebre junto com seus clientes! Aniversários, datas especiais... Mensagens que emocionam. #celebracao #emocao #uptech"
+  },
+  {
+    "id": 63,
+    "categoria": "Engajamento",
+    "texto": "❤️ Construa relacionamentos que duram! SMS vai além da venda, cria fidelização real. #fidelizacao #relacionamento #uptech"
+  },
+  {
+    "id": 64,
+    "categoria": "Engajamento",
+    "texto": "🔔 Mantenha seus clientes informados! Atualizações, novidades, lançamentos... Eles sempre sabem primeiro. #informacao #novidades #uptech"
+  },
+  {
+    "id": 65,
+    "categoria": "Engajamento",
+    "texto": "🎁 Surpresa e encantamento! Envie ofertas exclusivas e inesperadas para seus melhores clientes. #surpresa #encantamento #uptech"
+  },
+  {
+    "id": 66,
+    "categoria": "Engajamento",
+    "texto": "📱 Pesquisas de satisfação que funcionam! Taxa de resposta 10x maior que email. Ouça seus clientes! #pesquisa #feedback #uptech"
+  },
+  {
+    "id": 67,
+    "categoria": "Engajamento",
+    "texto": "💡 Eduque seu público! Dicas, tutoriais, conteúdo de valor via SMS. Seja referência no seu nicho. #educacao #conteudo #uptech"
+  },
+  {
+    "id": 68,
+    "categoria": "Engajamento",
+    "texto": "🌟 Programa de fidelidade via SMS! Pontos, recompensas, benefícios exclusivos. Cliente feliz volta sempre. #fidelidade #recompensas #uptech"
+  },
+  {
+    "id": 69,
+    "categoria": "Engajamento",
+    "texto": "🎯 Segmente e personalize! Cada cliente é único e merece uma comunicação especial. #personalizacao #unico #uptech"
+  },
+  {
+    "id": 70,
+    "categoria": "Engajamento",
+    "texto": "📣 Anúncios em primeira mão! Seus clientes VIP são os primeiros a saber de tudo. #primeiramao #exclusivo #uptech"
+  },
+  {
+    "id": 71,
+    "categoria": "Engajamento",
+    "texto": "💬 Suporte via SMS! Responda dúvidas rapidamente e mantenha alta satisfação. #suporte #atendimento #uptech"
+  },
+  {
+    "id": 72,
+    "categoria": "Engajamento",
+    "texto": "🎊 Gamificação que engaja! Desafios, conquistas, ranking... Torne a experiência divertida. #gamificacao #diversao #uptech"
+  },
+  {
+    "id": 73,
+    "categoria": "Engajamento",
+    "texto": "📆 Lembretes que ajudam! Compromissos, renovações, reabastecimento... Esteja presente sempre. #lembretes #presenca #uptech"
+  },
+  {
+    "id": 74,
+    "categoria": "Engajamento",
+    "texto": "🌈 Humanize sua marca! SMS permite comunicação autêntica e próxima. Seja humano, não robô. #humanizacao #autenticidade #uptech"
+  },
+  {
+    "id": 75,
+    "categoria": "Engajamento",
+    "texto": "💝 Cuidado pós-venda! Acompanhe a jornada do cliente mesmo após a compra. Relacionamento duradouro. #posvenda #jornada #uptech"
+  },
+  {
+    "id": 76,
+    "categoria": "Engajamento",
+    "texto": "🎁 Reative clientes inativos! Mensagens especiais de volta trazem até 30% de retorno. #reativacao #retorno #uptech"
+  },
+  {
+    "id": 77,
+    "categoria": "Engajamento",
+    "texto": "📱 Comunidade exclusiva via SMS! Faça seus clientes se sentirem parte de algo especial. #comunidade #exclusivo #uptech"
+  },
+  {
+    "id": 78,
+    "categoria": "Engajamento",
+    "texto": "⭐ Solicite avaliações no momento certo! Logo após experiência positiva, capture o testemunho. #avaliacoes #testemunho #uptech"
+  },
+  {
+    "id": 79,
+    "categoria": "Engajamento",
+    "texto": "🎯 Conteúdo relevante sempre! Analise o comportamento e envie apenas o que interessa. #relevancia #comportamento #uptech"
+  },
+  {
+    "id": 80,
+    "categoria": "Engajamento",
+    "texto": "💬 Conversas de duas vias! Permita respostas e crie diálogo real com seus clientes. #dialogo #interacao #uptech"
+  },
+  {
+    "id": 81,
+    "categoria": "Chamadas de Ação",
+    "texto": "🚀 CADASTRE-SE AGORA e transforme seu negócio! Link na bio. Não perca tempo! #cadastro #agora #uptech"
+  },
+  {
+    "id": 82,
+    "categoria": "Chamadas de Ação",
+    "texto": "💰 APROVEITE HOJE! Promoção exclusiva termina em 24h. Clique e garanta seu desconto! #aproveite #promocao #uptech"
+  },
+  {
+    "id": 83,
+    "categoria": "Chamadas de Ação",
+    "texto": "📱 BAIXE GRÁTIS nosso guia completo de SMS Marketing! Material exclusivo te esperando. #baixe #guia #uptech"
+  },
+  {
+    "id": 84,
+    "categoria": "Chamadas de Ação",
+    "texto": "🎁 GANHE CRÉDITOS GRÁTIS agora! Cadastre-se em menos de 2 minutos e comece a vender mais. #ganhe #gratis #uptech"
+  },
+  {
+    "id": 85,
+    "categoria": "Chamadas de Ação",
+    "texto": "⚡ TESTE GRÁTIS por 7 dias! Sem compromisso, sem cartão de crédito. Experimente agora! #teste #gratis #uptech"
+  },
+  {
+    "id": 86,
+    "categoria": "Chamadas de Ação",
+    "texto": "🔥 ÚLTIMAS VAGAS! Promoção limitada está acabando. Garanta a sua AGORA! #urgencia #limitado #uptech"
+  },
+  {
+    "id": 87,
+    "categoria": "Chamadas de Ação",
+    "texto": "💎 AGENDE SUA DEMONSTRAÇÃO gratuita! Veja a plataforma em ação com nossos especialistas. #agende #demo #uptech"
+  },
+  {
+    "id": 88,
+    "categoria": "Chamadas de Ação",
+    "texto": "📞 FALE COM NOSSO TIME agora pelo WhatsApp! Tire suas dúvidas em tempo real. #fale #whatsapp #uptech"
+  },
+  {
+    "id": 89,
+    "categoria": "Chamadas de Ação",
+    "texto": "🎯 COMECE AGORA e veja resultados em 24h! Processo rápido e simples. #comece #resultados #uptech"
+  },
+  {
+    "id": 90,
+    "categoria": "Chamadas de Ação",
+    "texto": "💰 COMPARE PREÇOS e descubra por que somos os melhores! Transparência total. #compare #precos #uptech"
+  },
+  {
+    "id": 91,
+    "categoria": "Chamadas de Ação",
+    "texto": "🚀 MIGRE AGORA e ganhe 50% OFF permanente! Traga sua base e economize para sempre. #migre #economia #uptech"
+  },
+  {
+    "id": 92,
+    "categoria": "Chamadas de Ação",
+    "texto": "📊 VEJA NOSSOS CASES de sucesso! Empresas reais, resultados comprovados. #cases #sucesso #uptech"
+  },
+  {
+    "id": 93,
+    "categoria": "Chamadas de Ação",
+    "texto": "🎁 PARTICIPE do sorteio! Siga, curta e marque 3 amigos. Vários prêmios! #sorteio #participe #uptech"
+  },
+  {
+    "id": 94,
+    "categoria": "Chamadas de Ação",
+    "texto": "💡 APRENDA GRÁTIS! Acesse nossos tutoriais e domine o SMS marketing. #aprenda #tutoriais #uptech"
+  },
+  {
+    "id": 95,
+    "categoria": "Chamadas de Ação",
+    "texto": "⭐ AVALIE-NOS e ganhe bônus! Sua opinião vale créditos extras na plataforma. #avalie #bonus #uptech"
+  },
+  {
+    "id": 96,
+    "categoria": "Chamadas de Ação",
+    "texto": "📱 BAIXE NOSSO APP e gerencie tudo pelo celular! Disponível para iOS e Android. #app #baixe #uptech"
+  },
+  {
+    "id": 97,
+    "categoria": "Chamadas de Ação",
+    "texto": "🔔 ATIVE AS NOTIFICAÇÕES e não perca nenhuma promoção exclusiva! Fique por dentro. #notificacoes #ative #uptech"
+  },
+  {
+    "id": 98,
+    "categoria": "Chamadas de Ação",
+    "texto": "💬 COMENTE AQUI suas dúvidas! Respondemos todos e ainda sorteamos créditos grátis. #comente #participe #uptech"
+  },
+  {
+    "id": 99,
+    "categoria": "Chamadas de Ação",
+    "texto": "🎯 SOLICITE ORÇAMENTO personalizado! Planos sob medida para seu negócio. #orcamento #personalizado #uptech"
+  },
+  {
+    "id": 100,
+    "categoria": "Chamadas de Ação",
+    "texto": "🚀 COMPARTILHE com quem precisa! Ajude outros empresários a crescerem também. #compartilhe #ajude #uptech"
+  },
+  {
+    "id": 101,
+    "categoria": "Sazonais",
+    "texto": "🎄 FELIZ NATAL! Que essa data traga prosperidade para seu negócio. Ofertas especiais aguardando você! #natal #feliznatal #uptech"
+  },
+  {
+    "id": 102,
+    "categoria": "Sazonais",
+    "texto": "🎆 FELIZ ANO NOVO! 2025 será seu melhor ano com a Uptech ao seu lado. Vamos juntos! #anonovo #2025 #uptech"
+  },
+  {
+    "id": 103,
+    "categoria": "Sazonais",
+    "texto": "🐰 PÁSCOA DOCE! Ofertas especiais para adoçar seu negócio. Promoção limitada! #pascoa #promocao #uptech"
+  },
+  {
+    "id": 104,
+    "categoria": "Sazonais",
+    "texto": "💐 DIA DAS MÃES! Ajude suas clientes a presentearem quem amam. Campanhas especiais disponíveis! #diadasmaes #campanha #uptech"
+  },
+  {
+    "id": 105,
+    "categoria": "Sazonais",
+    "texto": "👔 DIA DOS PAIS chegando! Aumente suas vendas com nossas estratégias comprovadas. #diadospais #vendas #uptech"
+  },
+  {
+    "id": 106,
+    "categoria": "Sazonais",
+    "texto": "💘 DIA DOS NAMORADOS! Amor está no ar e vendas também. Campanhas românticas que convertem! #diadosnamorados #amor #uptech"
+  },
+  {
+    "id": 107,
+    "categoria": "Sazonais",
+    "texto": "🔥 BLACK FRIDAY UPTECH! A maior promoção do ano está aqui. Descontos de até 70%! #blackfriday #megapromo #uptech"
+  },
+  {
+    "id": 108,
+    "categoria": "Sazonais",
+    "texto": "💻 CYBER MONDAY! Ofertas exclusivas online. Última chance de economizar grande! #cybermonday #online #uptech"
+  },
+  {
+    "id": 109,
+    "categoria": "Sazonais",
+    "texto": "🎒 VOLTA ÀS AULAS! Prepare seu negócio para a alta temporada. Planos especiais disponíveis! #voltaasaulas #temporada #uptech"
+  },
+  {
+    "id": 110,
+    "categoria": "Sazonais",
+    "texto": "🎭 CARNAVAL! Hora de festa e vendas! Campanhas que fazem sua empresa brilhar. #carnaval #festa #uptech"
+  },
+  {
+    "id": 111,
+    "categoria": "Sazonais",
+    "texto": "🇧🇷 INDEPENDÊNCIA DO BRASIL! Liberte seu potencial de vendas com a Uptech. #independencia #brasil #uptech"
+  },
+  {
+    "id": 112,
+    "categoria": "Sazonais",
+    "texto": "👻 HALLOWEEN chegando! Assuste a concorrência com suas campanhas. Ofertas de arrepiar! #halloween #campanha #uptech"
+  },
+  {
+    "id": 113,
+    "categoria": "Sazonais",
+    "texto": "🛒 DIA DO CONSUMIDOR! Sua chance de atrair novos clientes. Promoções imperdíveis! #diadoconsumidor #clientes #uptech"
+  },
+  {
+    "id": 114,
+    "categoria": "Sazonais",
+    "texto": "📅 INÍCIO DO MÊS! Comece com o pé direito. Planos e ofertas fresquinhos para você! #iniciodomes #novomes #uptech"
+  },
+  {
+    "id": 115,
+    "categoria": "Sazonais",
+    "texto": "🍻 OKTOBERFEST! Comemore com descontos especiais. Prost para seu crescimento! #oktoberfest #comemore #uptech"
+  },
+  {
+    "id": 116,
+    "categoria": "Sazonais",
+    "texto": "🎃 SÃO JOÃO! Arraiá de promoções para seu negócio crescer. Vem dançar! #saojoao #arraia #uptech"
+  },
+  {
+    "id": 117,
+    "categoria": "Sazonais",
+    "texto": "📚 DIA DO LIVRO! Conhecimento é poder. Aprenda com nossos materiais gratuitos! #diadolivro #conhecimento #uptech"
+  },
+  {
+    "id": 118,
+    "categoria": "Sazonais",
+    "texto": "🌹 DIA DA MULHER! Homenageamos todas as empreendedoras incríveis. Ofertas especiais! #diadamulher #empreendedoras #uptech"
+  },
+  {
+    "id": 119,
+    "categoria": "Sazonais",
+    "texto": "⚽ COPA DO MUNDO! Ganhe junto com o Brasil. Promoções de campeão! #copa #brasil #uptech"
+  },
+  {
+    "id": 120,
+    "categoria": "Sazonais",
+    "texto": "🎊 FIM DE ANO chegando! Feche 2024 com chave de ouro. Balanço positivo garantido! #fimdoano #balanco #uptech"
+  }
+]
