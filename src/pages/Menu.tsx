@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles } from "lucide-react";
+import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles, History } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
@@ -63,6 +63,7 @@ interface ProductOption {
 
 export default function Menu() {
   const { restaurantId } = useParams();
+  const navigate = useNavigate();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -356,20 +357,31 @@ export default function Menu() {
                 )}
               </div>
             </div>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => setCartOpen(true)}
-              className="relative shadow-xl hover:scale-105 transition-transform"
-            >
-              <ShoppingCart className="mr-2 h-5 w-5" />
-              <span className="hidden sm:inline font-semibold">Carrinho</span>
-              {items.length > 0 && (
-                <Badge className="absolute -top-2 -right-2 bg-destructive h-7 w-7 flex items-center justify-center p-0 text-xs font-bold animate-pulse shadow-lg">
-                  {items.length}
-                </Badge>
-              )}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => navigate("/historico")}
+                className="shadow-xl hover:scale-105 transition-transform bg-white/90"
+              >
+                <History className="mr-2 h-5 w-5" />
+                <span className="hidden sm:inline font-semibold">Meus Pedidos</span>
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => setCartOpen(true)}
+                className="relative shadow-xl hover:scale-105 transition-transform"
+              >
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                <span className="hidden sm:inline font-semibold">Carrinho</span>
+                {items.length > 0 && (
+                  <Badge className="absolute -top-2 -right-2 bg-destructive h-7 w-7 flex items-center justify-center p-0 text-xs font-bold animate-pulse shadow-lg">
+                    {items.length}
+                  </Badge>
+                )}
+              </Button>
+            </div>
           </div>
           
           <div className="space-y-3">
