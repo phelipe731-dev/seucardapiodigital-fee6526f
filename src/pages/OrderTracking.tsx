@@ -143,7 +143,7 @@ export default function OrderTracking() {
         <Card className="max-w-md w-full mx-4">
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground mb-4">Pedido não encontrado</p>
-            <Button onClick={() => navigate("/")}>Voltar ao Início</Button>
+            <Button onClick={() => navigate("/menu")}>Voltar ao Cardápio</Button>
           </CardContent>
         </Card>
       </div>
@@ -210,9 +210,9 @@ export default function OrderTracking() {
         <div className="text-center">
           <Button 
             variant="outline" 
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/menu")}
           >
-            Voltar ao Início
+            Voltar ao Cardápio
           </Button>
         </div>
       </div>
