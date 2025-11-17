@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Menu, Smartphone, QrCode, ShoppingCart, BarChart3, Zap, CheckCircle2 } from "lucide-react";
+import { Menu, Smartphone, QrCode, ShoppingCart, BarChart3, Zap, CheckCircle2, Clock, Star, Users, TrendingUp, MessageCircle, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroBurger from "@/assets/hero-burger.jpg";
 import foodVariety from "@/assets/food-variety.jpg";
@@ -30,36 +30,57 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 px-4">
+      <section className="relative overflow-hidden py-24 md:py-32 px-4">
         <div className="absolute inset-0 z-0">
           <img 
             src={heroBurger} 
             alt="Delicious food" 
-            className="w-full h-full object-cover brightness-50"
+            className="w-full h-full object-cover brightness-[0.35]"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-background"></div>
         </div>
         
-        <div className="container mx-auto max-w-6xl relative z-10">
+        <div className="container mx-auto max-w-7xl relative z-10">
           <div className="text-center text-white">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 backdrop-blur-sm border border-white/30">
-              <Zap className="h-4 w-4" />
-              <span className="text-sm font-medium">Cardápio Digital Inteligente</span>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 backdrop-blur-md border border-white/20 animate-fade-in-up">
+              <Zap className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold">Sistema Completo de Cardápio Digital</span>
             </div>
-            <h1 className="mb-6 text-4xl font-bold leading-tight md:text-6xl drop-shadow-lg">
-              Transforme Seu Restaurante com Cardápio Digital
+            <h1 className="mb-6 text-4xl font-bold leading-tight md:text-6xl lg:text-7xl drop-shadow-2xl animate-fade-in-up">
+              Transforme Seu Restaurante <br />
+              <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">em Digital</span>
             </h1>
-            <p className="mb-8 text-lg text-white md:text-xl max-w-2xl mx-auto drop-shadow-md">
-              Sistema completo para criar, gerenciar e receber pedidos pelo WhatsApp. 
-              Simples, rápido e profissional.
+            <p className="mb-10 text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto drop-shadow-lg leading-relaxed animate-fade-in-up">
+              Cardápio interativo + Pedidos pelo WhatsApp + Painel administrativo completo. 
+              Tudo que você precisa em uma única plataforma.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-white text-primary hover:bg-white/90 font-semibold shadow-xl" asChild>
-                <Link to="/auth">Criar Meu Cardápio Grátis</Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12 animate-fade-in-up">
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 font-bold shadow-2xl text-base px-8 py-6 h-auto" asChild>
+                <Link to="/auth">Começar Grátis Agora</Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 backdrop-blur-sm" asChild>
-                <Link to="/auth">Ver Demo</Link>
+              <Button size="lg" className="bg-white/10 backdrop-blur-md border-2 border-white/30 text-white hover:bg-white/20 font-semibold px-8 py-6 h-auto" asChild>
+                <Link to="/auth">Ver Demonstração</Link>
               </Button>
+            </div>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 max-w-4xl mx-auto pt-8 border-t border-white/20 animate-fade-in-up">
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold mb-1">500+</div>
+                <div className="text-sm text-white/80">Restaurantes Ativos</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold mb-1">98%</div>
+                <div className="text-sm text-white/80">Satisfação</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold mb-1">50K+</div>
+                <div className="text-sm text-white/80">Pedidos/Mês</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl md:text-4xl font-bold mb-1">24/7</div>
+                <div className="text-sm text-white/80">Suporte</div>
+              </div>
             </div>
           </div>
         </div>
