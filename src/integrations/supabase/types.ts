@@ -141,6 +141,65 @@ export type Database = {
           },
         ]
       }
+      order_payments: {
+        Row: {
+          amount: number
+          asaas_invoice_url: string | null
+          asaas_payment_id: string
+          created_at: string
+          credit_card_token: string | null
+          expires_at: string | null
+          id: string
+          order_id: string
+          paid_at: string | null
+          payment_method: string
+          pix_qr_code: string | null
+          pix_qr_code_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          asaas_invoice_url?: string | null
+          asaas_payment_id: string
+          created_at?: string
+          credit_card_token?: string | null
+          expires_at?: string | null
+          id?: string
+          order_id: string
+          paid_at?: string | null
+          payment_method: string
+          pix_qr_code?: string | null
+          pix_qr_code_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          asaas_invoice_url?: string | null
+          asaas_payment_id?: string
+          created_at?: string
+          credit_card_token?: string | null
+          expires_at?: string | null
+          id?: string
+          order_id?: string
+          paid_at?: string | null
+          payment_method?: string
+          pix_qr_code?: string | null
+          pix_qr_code_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string | null
@@ -341,6 +400,75 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      restaurant_subscription_payments: {
+        Row: {
+          amount: number
+          asaas_invoice_url: string | null
+          asaas_payment_id: string
+          boleto_url: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          paid_at: string | null
+          payment_method: string
+          pix_qr_code: string | null
+          pix_qr_code_url: string | null
+          restaurant_id: string
+          status: string
+          subscription_plan_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          asaas_invoice_url?: string | null
+          asaas_payment_id: string
+          boleto_url?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_method: string
+          pix_qr_code?: string | null
+          pix_qr_code_url?: string | null
+          restaurant_id: string
+          status?: string
+          subscription_plan_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          asaas_invoice_url?: string | null
+          asaas_payment_id?: string
+          boleto_url?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_method?: string
+          pix_qr_code?: string | null
+          pix_qr_code_url?: string | null
+          restaurant_id?: string
+          status?: string
+          subscription_plan_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurant_subscription_payments_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restaurant_subscription_payments_subscription_plan_id_fkey"
+            columns: ["subscription_plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       restaurants: {
         Row: {
