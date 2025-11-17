@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
 import { ProductOptionsManager } from "@/components/admin/ProductOptionsManager";
 import { OrdersView } from "@/components/admin/OrdersView";
 import { QRCodeView } from "@/components/admin/QRCodeView";
+import { WhatsAppConnection } from "@/components/admin/WhatsAppConnection";
 import PlansManager from "@/components/admin/PlansManager";
 import DashboardStats from "@/components/admin/DashboardStats";
 import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
@@ -84,7 +85,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="dashboard" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-10 max-w-full overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-11 max-w-full overflow-x-auto">
             <TabsTrigger value="dashboard" className="gap-2">
               <BarChart3 size={18} />
               Dashboard
@@ -112,6 +113,10 @@ export default function Admin() {
             <TabsTrigger value="orders" className="gap-2">
               <ShoppingBag size={18} />
               Pedidos
+            </TabsTrigger>
+            <TabsTrigger value="whatsapp" className="gap-2">
+              <MessageCircle size={18} />
+              WhatsApp
             </TabsTrigger>
             <TabsTrigger value="theme" className="gap-2">
               <Palette size={18} />
@@ -153,6 +158,10 @@ export default function Admin() {
 
           <TabsContent value="orders">
             <OrdersView />
+          </TabsContent>
+
+          <TabsContent value="whatsapp">
+            <WhatsAppConnection />
           </TabsContent>
 
           <TabsContent value="theme">
