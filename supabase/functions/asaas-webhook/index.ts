@@ -1,139 +1,161 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// CORS
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, asaas-access-token',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, asaas-access-token",
 };
 
+// INICIAR SERVIDOR
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  // Preflight
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const asaasApiKey = Deno.env.get('ASAAS_API_KEY');
-    
-    // Verificar token do webhook (segurança)
-    const webhookToken = req.headers.get('asaas-access-token');
-    if (webhookToken !== asaasApiKey) {
-      console.error('Invalid webhook token');
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+    console.log("🔔 ASAAS Webhook triggered");
+
+    const ASAAS_API_KEY = Deno.env.get("ASAAS_API_KEY");
+    if (!ASAAS_API_KEY) {
+      console.error("🚨 ASAAS_API_KEY faltando no ambiente");
+      return new Response(
+        JSON.stringify({ error: "ASAAS_API_KEY not configured" }),
+        { status: 500, headers: corsHeaders }
+      );
+    }
+
+    // 🔐 VALIDAÇÃO DE SEGURANÇA
+    const webhookToken = req.headers.get("asaas-access-token");
+    if (webhookToken !== ASAAS_API_KEY) {
+      console.error("🚫 Invalid webhook token");
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    // CLIENTE SUPABASE
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    const webhookData = await req.json();
-    console.log('Received webhook:', webhookData.event, webhookData.payment?.id);
+    // 🔍 RECEBE PAYLOAD DO ASAAS
+    const data = await req.json();
+    console.log("📩 Webhook recebido:", data);
 
-    const paymentId = webhookData.payment?.id;
-    const status = webhookData.payment?.status;
+    const eventType = data.event ?? data.type ?? data?.payment?.status;
+    const payment = data.payment;
+    const paymentId = payment?.id;
+    const paymentStatus = payment?.status;
 
-    if (!paymentId) {
-      throw new Error('Payment ID not found in webhook');
+    if (!paymentId || !paymentStatus) {
+      console.error("❌ Payment ID/status ausentes");
+      return new Response(JSON.stringify({ error: "Invalid payload" }), {
+        status: 400,
+        headers: corsHeaders,
+      });
     }
 
-    // Mapear status do ASAAS para nosso sistema
-    const statusMap: Record<string, string> = {
-      'PENDING': 'pending',
-      'RECEIVED': 'received',
-      'CONFIRMED': 'confirmed',
-      'OVERDUE': 'overdue',
-      'REFUNDED': 'refunded',
-      'RECEIVED_IN_CASH': 'received',
-      'REFUND_REQUESTED': 'refund_requested',
+    // 🎯 MAPEAMENTO DE STATUS
+    const statusMap = {
+      PENDING: "pending",
+      CONFIRMED: "confirmed",
+      RECEIVED: "received",
+      RECEIVED_IN_CASH: "received",
+      OVERDUE: "overdue",
+      REFUNDED: "refunded",
+      REFUND_REQUESTED: "refund_requested",
+      CANCELLED: "cancelled",
     };
 
-    const mappedStatus = statusMap[status] || 'pending';
+    const mappedStatus = statusMap[paymentStatus] ?? "pending";
 
-    // Atualizar pagamento de pedido
-    const { data: orderPayment } = await supabaseClient
-      .from('order_payments')
-      .select('*')
-      .eq('asaas_payment_id', paymentId)
-      .single();
+    console.log(
+      `🔄 Atualizando pagamento ${paymentId} → ${mappedStatus} (event: ${eventType})`
+    );
+
+    // 🛡️ IDEMPOTÊNCIA → EVITA DUPLICAR ATUALIZAÇÕES
+    const paidAt =
+      mappedStatus === "received" || mappedStatus === "confirmed"
+        ? new Date().toISOString()
+        : null;
+
+    // 🔎 TENTA ATUALIZAR ORDER_PAYMENTS
+    const { data: orderPayment } = await supabase
+      .from("order_payments")
+      .select("*")
+      .eq("asaas_payment_id", paymentId)
+      .maybeSingle();
 
     if (orderPayment) {
-      const updateData: any = {
-        status: mappedStatus,
-      };
+      console.log("🧾 Atualizando pagamento de pedido...");
 
-      if (mappedStatus === 'received' || mappedStatus === 'confirmed') {
-        updateData.paid_at = new Date().toISOString();
+      const { error } = await supabase
+        .from("order_payments")
+        .update({
+          status: mappedStatus,
+          paid_at: paidAt,
+        })
+        .eq("asaas_payment_id", paymentId);
+
+      if (error) {
+        console.error("❌ Erro atualizando order_payments:", error);
+        throw error;
       }
 
-      const { error: updateError } = await supabaseClient
-        .from('order_payments')
-        .update(updateData)
-        .eq('asaas_payment_id', paymentId);
-
-      if (updateError) {
-        console.error('Error updating order payment:', updateError);
-        throw updateError;
+      // Atualiza pedido quando pago
+      if (paidAt) {
+        await supabase
+          .from("orders")
+          .update({ status: "confirmed" })
+          .eq("id", orderPayment.order_id);
       }
-
-      // Atualizar status do pedido se pagamento confirmado
-      if (mappedStatus === 'received' || mappedStatus === 'confirmed') {
-        await supabaseClient
-          .from('orders')
-          .update({ status: 'confirmed' })
-          .eq('id', orderPayment.order_id);
-      }
-
-      console.log('Order payment updated:', paymentId, mappedStatus);
     }
 
-    // Atualizar pagamento de assinatura
-    const { data: subscriptionPayment } = await supabaseClient
-      .from('restaurant_subscription_payments')
-      .select('*')
-      .eq('asaas_payment_id', paymentId)
-      .single();
+    // 🔎 TENTA ATUALIZAR RESTAURANT_SUBSCRIPTION_PAYMENTS
+    const { data: subscriptionPayment } = await supabase
+      .from("restaurant_subscription_payments")
+      .select("*")
+      .eq("asaas_payment_id", paymentId)
+      .maybeSingle();
 
     if (subscriptionPayment) {
-      const updateData: any = {
-        status: mappedStatus,
-      };
+      console.log("🧾 Atualizando pagamento de assinatura...");
 
-      if (mappedStatus === 'received' || mappedStatus === 'confirmed') {
-        updateData.paid_at = new Date().toISOString();
+      const { error } = await supabase
+        .from("restaurant_subscription_payments")
+        .update({
+          status: mappedStatus,
+          paid_at: paidAt,
+        })
+        .eq("asaas_payment_id", paymentId);
+
+      if (error) {
+        console.error(
+          "❌ Erro atualizando restaurant_subscription_payments:",
+          error
+        );
+        throw error;
       }
-
-      const { error: updateError } = await supabaseClient
-        .from('restaurant_subscription_payments')
-        .update(updateData)
-        .eq('asaas_payment_id', paymentId);
-
-      if (updateError) {
-        console.error('Error updating subscription payment:', updateError);
-        throw updateError;
-      }
-
-      console.log('Subscription payment updated:', paymentId, mappedStatus);
     }
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    console.log("✅ Webhook concluído com sucesso");
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Error in asaas-webhook:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error("🔥 ERRO NO WEBHOOK:", error);
     return new Response(
-      JSON.stringify({ 
-        error: errorMessage 
+      JSON.stringify({
+        error: error?.message ?? "Unknown error",
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
