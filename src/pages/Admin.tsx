@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -85,7 +85,7 @@ export default function Admin() {
 
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="dashboard" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-11 max-w-full overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-12 max-w-full overflow-x-auto">
             <TabsTrigger value="dashboard" className="gap-2">
               <BarChart3 size={18} />
               Dashboard
@@ -129,6 +129,10 @@ export default function Admin() {
             <TabsTrigger value="qrcode" className="gap-2">
               <QrCode size={18} />
               QR Code
+            </TabsTrigger>
+            <TabsTrigger value="printer" className="gap-2">
+              <Printer size={18} />
+              Impressora
             </TabsTrigger>
           </TabsList>
 
@@ -174,6 +178,34 @@ export default function Admin() {
 
           <TabsContent value="qrcode">
             <QRCodeView />
+          </TabsContent>
+
+          <TabsContent value="printer">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold mb-4">Sistema de Impressão</h2>
+                <p className="text-muted-foreground mb-6">
+                  Configure a impressora térmica para impressão automática de pedidos.
+                </p>
+              </div>
+              <Button
+                onClick={() => navigate("/admin/printer")}
+                className="w-full sm:w-auto"
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Abrir Configurações da Impressora
+              </Button>
+              <div className="bg-muted/50 p-4 rounded-lg">
+                <h3 className="font-semibold mb-2">📝 Instruções</h3>
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                  <li>Configure o worker Node.js (consulte printer-worker/README.md)</li>
+                  <li>Obtenha o IP da sua impressora térmica</li>
+                  <li>Configure na tela de configurações</li>
+                  <li>Teste a impressão</li>
+                  <li>Novos pedidos serão impressos automaticamente!</li>
+                </ol>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </main>
