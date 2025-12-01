@@ -19,6 +19,7 @@ import AdminMarketingPublic from "./pages/AdminMarketingPublic";
 import AdminMarketingMaterial from "./pages/AdminMarketingMaterial";
 import PrinterSettings from "./pages/admin/PrinterSettings";
 import Waiter from "./pages/Waiter";
+import CustomerLoyalty from "./pages/CustomerLoyalty";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/marketing/material/:id" element={<AdminMarketingMaterial />} />
             <Route path="/admin/printer" element={<PrinterSettings />} />
             <Route path="/waiter" element={<Waiter />} />
+            <Route path="/fidelidade/:restaurantId" element={<CustomerLoyalty />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

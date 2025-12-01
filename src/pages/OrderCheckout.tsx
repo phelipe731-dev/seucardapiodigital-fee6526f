@@ -165,11 +165,10 @@ export default function OrderCheckout() {
     try {
       // Salvar no histórico se solicitado
       if (saveToHistory) {
-        const total = subtotal + deliveryFee;
         const { error } = await supabase.from("orders").insert({
           restaurant_id: restaurantId,
           customer_name: customerName,
-          total_amount: total,
+          total_amount: total - couponDiscount,
           payment_method: 'whatsapp',
           status: 'pending',
           notes: observations || null,
