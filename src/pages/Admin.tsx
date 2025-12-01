@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -43,6 +44,9 @@ export default function Admin() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [restaurant, setRestaurant] = useState<any>(null);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [inactiveProducts, setInactiveProducts] = useState(0);
+  const [subscription, setSubscription] = useState<any>(null);
   const activeSection = searchParams.get("section") || "dashboard";
 
   const filteredMenuItems = menuItems.filter(item =>
@@ -80,6 +84,7 @@ export default function Admin() {
 
   useEffect(() => {
     if (user) {
+      // Fetch restaurant data
       supabase
         .from("restaurants")
         .select("*")
@@ -88,6 +93,43 @@ export default function Admin() {
         .then(({ data }) => {
           if (data) {
             setRestaurant(data);
+            
+            // Fetch pending orders count
+            supabase
+              .from("orders")
+              .select("id", { count: "exact", head: true })
+              .eq("restaurant_id", data.id)
+              .eq("status", "pending")
+              .then(({ count }) => setPendingOrders(count || 0));
+            
+            // Fetch inactive products count
+            supabase
+              .from("products")
+              .select("id", { count: "exact", head: true })
+              .eq("restaurant_id", data.id)
+              .eq("is_active", false)
+              .then(({ count }) => setInactiveProducts(count || 0));
+          }
+        });
+      
+      // Fetch user subscription
+      supabase
+        .from("user_subscriptions")
+        .select(`
+          *,
+          subscription_plans (
+            name,
+            duration_days
+          )
+        `)
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .order("end_date", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setSubscription(data);
           }
         });
     }
@@ -175,7 +217,7 @@ export default function Admin() {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <Sidebar collapsible="icon" className="border-r bg-card">
-          <SidebarHeader className="border-b px-4 py-4">
+          <SidebarHeader className="border-b px-4 py-4 space-y-3">
             <div className="flex items-center gap-3">
               {restaurant?.logo_url ? (
                 <img 
@@ -193,6 +235,32 @@ export default function Admin() {
                 <span className="text-xs text-muted-foreground">Gerenciamento</span>
               </div>
             </div>
+            
+            {/* Subscription Info */}
+            {subscription && (
+              <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-3 space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <Crown className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-foreground">
+                    {subscription.subscription_plans?.name || "Plano Ativo"}
+                  </span>
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  Expira em: {new Date(subscription.end_date).toLocaleDateString("pt-BR")}
+                </div>
+              </div>
+            )}
+            
+            {/* Support Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full gap-2 text-xs"
+              onClick={() => window.open(`https://wa.me/5511999999999?text=Olá, preciso de ajuda com o painel administrativo`, "_blank")}
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+              Suporte via WhatsApp
+            </Button>
           </SidebarHeader>
           
           <SidebarContent className="px-2 py-4">
@@ -219,6 +287,15 @@ export default function Admin() {
                   <SidebarMenu className="space-y-1">
                     {items.map((item) => {
                       const isActive = activeSection === item.section;
+                      
+                      // Get badge count for specific sections
+                      let badgeCount = 0;
+                      if (item.section === "orders") {
+                        badgeCount = pendingOrders;
+                      } else if (item.section === "products") {
+                        badgeCount = inactiveProducts;
+                      }
+                      
                       return (
                         <SidebarMenuItem key={item.section}>
                           <SidebarMenuButton asChild>
@@ -231,7 +308,15 @@ export default function Admin() {
                               )}
                             >
                               <item.icon className="h-4 w-4 shrink-0" />
-                              <span className="truncate">{item.title}</span>
+                              <span className="truncate flex-1">{item.title}</span>
+                              {badgeCount > 0 && (
+                                <Badge 
+                                  variant={isActive ? "secondary" : "default"}
+                                  className="ml-auto h-5 px-1.5 text-xs"
+                                >
+                                  {badgeCount}
+                                </Badge>
+                              )}
                             </NavLink>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
