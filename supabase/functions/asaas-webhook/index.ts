@@ -61,7 +61,7 @@ serve(async (req) => {
     }
 
     // 🎯 MAPEAMENTO DE STATUS
-    const statusMap = {
+    const statusMap: Record<string, string> = {
       PENDING: "pending",
       CONFIRMED: "confirmed",
       RECEIVED: "received",
@@ -151,7 +151,7 @@ serve(async (req) => {
     console.error("🔥 ERRO NO WEBHOOK:", error);
     return new Response(
       JSON.stringify({
-        error: error?.message ?? "Unknown error",
+        error: error instanceof Error ? error.message : "Unknown error",
       }),
       {
         status: 500,
