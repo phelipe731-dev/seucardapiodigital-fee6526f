@@ -1,0 +1,22 @@
+{
+  "name": "whatsapp-worker",
+  "version": "1.0.0",
+  "description": "WhatsApp Web integration for order notifications",
+  "main": "worker.js",
+  "type": "module",
+  "scripts": {
+    "start": "node worker.js",
+    "dev": "node --watch worker.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.81.1",
+    "whatsapp-web.js": "^1.25.0",
+    "qrcode": "^1.5.4",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
