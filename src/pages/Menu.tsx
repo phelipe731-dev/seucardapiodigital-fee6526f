@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -64,6 +64,9 @@ interface ProductOption {
 export default function Menu() {
   const { restaurantId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tableNumber = searchParams.get("mesa");
+  const enableTableQr = import.meta.env.VITE_RESTAURANT_ENABLE_TABLE_QR === 'true';
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -370,7 +373,7 @@ export default function Menu() {
               <Button
                 variant="secondary"
                 size="lg"
-                onClick={() => setCartOpen(true)}
+                onClick={() => navigate(`/checkout/${restaurantId}${tableNumber ? `?mesa=${tableNumber}` : ''}`)}
                 className="relative shadow-xl hover:scale-105 transition-transform"
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
@@ -430,6 +433,19 @@ export default function Menu() {
           </div>
         </div>
       </header>
+
+      {/* Badge de Mesa (se vindo de QR Code) */}
+      {tableNumber && enableTableQr && (
+        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-b-2 border-primary/30 py-4">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center gap-3">
+              <Badge variant="secondary" className="text-base px-6 py-2 shadow-lg">
+                📍 Você está na Mesa {tableNumber}
+              </Badge>
+            </div>
+          </div>
+        </div>
+      )}
 
       {!isRestaurantOpen() && (
         <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border-y-4 border-destructive/50 py-6 animate-fade-in-up">
