@@ -656,6 +656,72 @@ export type Database = {
           },
         ]
       }
+      order_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          delivery_rating: number | null
+          food_rating: number | null
+          id: string
+          is_published: boolean | null
+          order_id: string | null
+          overall_rating: number
+          restaurant_id: string | null
+          service_rating: number | null
+          updated_at: string | null
+          waiter_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_rating?: number | null
+          food_rating?: number | null
+          id?: string
+          is_published?: boolean | null
+          order_id?: string | null
+          overall_rating: number
+          restaurant_id?: string | null
+          service_rating?: number | null
+          updated_at?: string | null
+          waiter_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          delivery_rating?: number | null
+          food_rating?: number | null
+          id?: string
+          is_published?: boolean | null
+          order_id?: string | null
+          overall_rating?: number
+          restaurant_id?: string | null
+          service_rating?: number | null
+          updated_at?: string | null
+          waiter_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_reviews_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_reviews_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orders: {
         Row: {
           created_at: string | null
@@ -916,6 +982,75 @@ export type Database = {
         }
         Relationships: []
       }
+      reservations: {
+        Row: {
+          confirmation_code: string | null
+          created_at: string | null
+          customer_email: string | null
+          customer_name: string
+          customer_phone: string
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          party_size: number
+          reservation_date: string
+          reservation_time: string
+          restaurant_id: string | null
+          status: string | null
+          table_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          confirmation_code?: string | null
+          created_at?: string | null
+          customer_email?: string | null
+          customer_name: string
+          customer_phone: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          party_size: number
+          reservation_date: string
+          reservation_time: string
+          restaurant_id?: string | null
+          status?: string | null
+          table_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          confirmation_code?: string | null
+          created_at?: string | null
+          customer_email?: string | null
+          customer_name?: string
+          customer_phone?: string
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          party_size?: number
+          reservation_date?: string
+          reservation_time?: string
+          restaurant_id?: string | null
+          status?: string | null
+          table_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_table_id_fkey"
+            columns: ["table_id"]
+            isOneToOne: false
+            referencedRelation: "tables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       restaurant_subscription_payments: {
         Row: {
           amount: number
@@ -1101,6 +1236,53 @@ export type Database = {
           price?: number
         }
         Relationships: []
+      }
+      tables: {
+        Row: {
+          capacity: number
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          qr_code_url: string | null
+          restaurant_id: string | null
+          status: string | null
+          table_number: string
+          updated_at: string | null
+        }
+        Insert: {
+          capacity: number
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          qr_code_url?: string | null
+          restaurant_id?: string | null
+          status?: string | null
+          table_number: string
+          updated_at?: string | null
+        }
+        Update: {
+          capacity?: number
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          qr_code_url?: string | null
+          restaurant_id?: string | null
+          status?: string | null
+          table_number?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tables_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

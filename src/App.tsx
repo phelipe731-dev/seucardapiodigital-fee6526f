@@ -20,6 +20,7 @@ import AdminMarketingMaterial from "./pages/AdminMarketingMaterial";
 import PrinterSettings from "./pages/admin/PrinterSettings";
 import Waiter from "./pages/Waiter";
 import CustomerLoyalty from "./pages/CustomerLoyalty";
+import OrderReview from "./pages/OrderReview";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
             <Route path="/admin/printer" element={<PrinterSettings />} />
             <Route path="/waiter" element={<Waiter />} />
             <Route path="/fidelidade/:restaurantId" element={<CustomerLoyalty />} />
+            <Route path="/avaliar/:orderId" element={<OrderReview />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
