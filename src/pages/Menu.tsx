@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles, History } from "lucide-react";
+import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles, History, Calendar } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
@@ -369,6 +369,15 @@ export default function Menu() {
               >
                 <History className="mr-2 h-5 w-5" />
                 <span className="hidden sm:inline font-semibold">Meus Pedidos</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => navigate(`/reservar/${restaurantId}`)}
+                className="shadow-xl hover:scale-105 transition-transform bg-white/90"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                <span className="hidden sm:inline font-semibold">Reservar Mesa</span>
               </Button>
               <Button
                 variant="secondary"
