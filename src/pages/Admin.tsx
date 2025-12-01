@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -16,22 +17,23 @@ import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
 import ThemeCustomizer from "@/components/admin/ThemeCustomizer";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
-import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
 import { NavLink } from "@/components/NavLink";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { title: "Dashboard", icon: BarChart3, section: "dashboard" },
-  { title: "Restaurante", icon: Store, section: "restaurant" },
-  { title: "Categorias", icon: List, section: "categories" },
-  { title: "Produtos", icon: Package, section: "products" },
-  { title: "Opcionais", icon: Settings, section: "options" },
-  { title: "Delivery", icon: MapPin, section: "delivery" },
-  { title: "Pedidos", icon: ShoppingBag, section: "orders" },
-  { title: "WhatsApp", icon: MessageCircle, section: "whatsapp" },
-  { title: "Tema", icon: Palette, section: "theme" },
-  { title: "Planos", icon: Package, section: "plans" },
-  { title: "QR Code", icon: QrCode, section: "qrcode" },
-  { title: "Impressora", icon: Printer, section: "printer" },
+  { title: "Dashboard", icon: BarChart3, section: "dashboard", category: "Principal" },
+  { title: "Pedidos", icon: ShoppingBag, section: "orders", category: "Principal" },
+  { title: "Produtos", icon: Package, section: "products", category: "Catálogo" },
+  { title: "Categorias", icon: List, section: "categories", category: "Catálogo" },
+  { title: "Opcionais", icon: Settings, section: "options", category: "Catálogo" },
+  { title: "Delivery", icon: MapPin, section: "delivery", category: "Operação" },
+  { title: "WhatsApp", icon: MessageCircle, section: "whatsapp", category: "Operação" },
+  { title: "Impressora", icon: Printer, section: "printer", category: "Operação" },
+  { title: "Restaurante", icon: Store, section: "restaurant", category: "Configurações" },
+  { title: "Tema", icon: Palette, section: "theme", category: "Configurações" },
+  { title: "QR Code", icon: QrCode, section: "qrcode", category: "Configurações" },
+  { title: "Planos", icon: Package, section: "plans", category: "Configurações" },
 ];
 
 export default function Admin() {
@@ -39,7 +41,20 @@ export default function Admin() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const activeSection = searchParams.get("section") || "dashboard";
+
+  const filteredMenuItems = menuItems.filter(item =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const groupedMenuItems = filteredMenuItems.reduce((acc, item) => {
+    if (!acc[item.category]) {
+      acc[item.category] = [];
+    }
+    acc[item.category].push(item);
+    return acc;
+  }, {} as Record<string, typeof menuItems>);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -143,39 +158,83 @@ export default function Admin() {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <Sidebar collapsible="icon" className="border-r">
-          <SidebarContent>
-            <SidebarGroup>
-              <div className="px-3 py-2">
-                <h2 className="mb-2 px-4 text-lg font-semibold">Admin</h2>
+        <Sidebar collapsible="icon" className="border-r bg-card">
+          <SidebarHeader className="border-b px-4 py-4">
+            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                <Store className="h-4 w-4" />
               </div>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {menuItems.map((item) => (
-                    <SidebarMenuItem key={item.section}>
-                      <SidebarMenuButton asChild>
-                        <NavLink
-                          to={`/admin?section=${item.section}`}
-                          className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-accent"
-                          activeClassName="bg-accent text-accent-foreground font-medium"
-                        >
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold">Admin Panel</span>
+                <span className="text-xs text-muted-foreground">Gerenciamento</span>
+              </div>
+            </div>
+          </SidebarHeader>
+          
+          <SidebarContent className="px-2 py-4">
+            {/* Search */}
+            <div className="px-2 pb-4">
+              <div className="relative">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-8 h-9 bg-background"
+                />
+              </div>
+            </div>
+
+            {/* Menu Groups */}
+            {Object.entries(groupedMenuItems).map(([category, items]) => (
+              <SidebarGroup key={category} className="mb-4">
+                <SidebarGroupLabel className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  {category}
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <SidebarMenu className="space-y-1">
+                    {items.map((item) => {
+                      const isActive = activeSection === item.section;
+                      return (
+                        <SidebarMenuItem key={item.section}>
+                          <SidebarMenuButton asChild>
+                            <NavLink
+                              to={`/admin?section=${item.section}`}
+                              className={cn(
+                                "flex items-center gap-3 rounded-lg px-3 py-2.5 transition-all",
+                                "hover:bg-accent hover:text-accent-foreground",
+                                isActive && "bg-primary text-primary-foreground font-medium shadow-sm"
+                              )}
+                            >
+                              <item.icon className="h-4 w-4 shrink-0" />
+                              <span className="truncate">{item.title}</span>
+                            </NavLink>
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </SidebarGroup>
+            ))}
+
+            {searchQuery && filteredMenuItems.length === 0 && (
+              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                Nenhum resultado encontrado
+              </div>
+            )}
           </SidebarContent>
         </Sidebar>
 
         <div className="flex-1 flex flex-col">
-          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
-            <SidebarTrigger />
+          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
+            <SidebarTrigger className="hover:bg-accent">
+              <Menu className="h-5 w-5" />
+            </SidebarTrigger>
             <div className="flex-1">
-              <h1 className="text-xl font-semibold">Painel Administrativo</h1>
+              <h1 className="text-lg font-semibold">
+                {menuItems.find(item => item.section === activeSection)?.title || "Dashboard"}
+              </h1>
             </div>
             <Button
               variant="ghost"
@@ -183,13 +242,15 @@ export default function Admin() {
               onClick={handleSignOut}
               className="gap-2"
             >
-              <LogOut size={18} />
-              Sair
+              <LogOut className="h-4 w-4" />
+              <span className="hidden sm:inline">Sair</span>
             </Button>
           </header>
 
-          <main className="flex-1 overflow-y-auto p-6">
-            {renderContent()}
+          <main className="flex-1 overflow-y-auto p-6 bg-muted/30">
+            <div className="mx-auto max-w-7xl">
+              {renderContent()}
+            </div>
           </main>
         </div>
       </div>
