@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Printer, Save, TestTube, FileText, ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { Printer, Save, TestTube, FileText, ArrowLeft, CheckCircle, XCircle, Search, Wifi, Clock } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 interface PrinterConfig {
   id?: string;
@@ -29,13 +30,25 @@ interface PrintedOrder {
   created_at: string;
 }
 
+interface DiscoveredPrinter {
+  ip: string;
+  port: number;
+  available: boolean;
+  latency?: number;
+  name: string;
+  status: string;
+}
+
 export default function PrinterSettings() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [printedOrders, setPrintedOrders] = useState<PrintedOrder[]>([]);
+  const [discoveredPrinters, setDiscoveredPrinters] = useState<DiscoveredPrinter[]>([]);
+  const [workerUrl, setWorkerUrl] = useState("http://localhost:3001");
   
   const [config, setConfig] = useState<PrinterConfig>({
     printer_ip: "192.168.0.100",
@@ -155,6 +168,47 @@ export default function PrinterSettings() {
     }
   }
 
+  async function handleScanNetwork() {
+    setScanning(true);
+    setDiscoveredPrinters([]);
+    
+    try {
+      toast.info("Escaneando rede... Isso pode levar até 2 minutos.");
+      
+      const response = await fetch(`${workerUrl}/scan`);
+      
+      if (!response.ok) {
+        throw new Error("Worker não está respondendo. Certifique-se de que está rodando.");
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.printers) {
+        setDiscoveredPrinters(data.printers);
+        
+        if (data.printers.length === 0) {
+          toast.warning("Nenhuma impressora encontrada na rede. Verifique se a impressora está ligada e conectada.");
+        } else {
+          toast.success(`${data.printers.length} impressora(s) encontrada(s)!`);
+        }
+      }
+    } catch (error) {
+      console.error("Error scanning network:", error);
+      toast.error("Erro ao escanear rede. Verifique se o worker está rodando em " + workerUrl);
+    } finally {
+      setScanning(false);
+    }
+  }
+
+  async function handleSelectPrinter(printer: DiscoveredPrinter) {
+    setConfig({
+      ...config,
+      printer_ip: printer.ip,
+      printer_port: printer.port,
+    });
+    toast.success(`Impressora ${printer.ip} selecionada!`);
+  }
+
   async function handleTestPrint() {
     setTesting(true);
     try {
@@ -245,6 +299,113 @@ export default function PrinterSettings() {
           Consulte o README.md em printer-worker/ para instruções de instalação.
         </AlertDescription>
       </Alert>
+
+      {/* Network Scanner */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="w-5 h-5" />
+            Buscar Impressoras Automaticamente
+          </CardTitle>
+          <CardDescription>
+            Escaneie sua rede local para encontrar impressoras térmicas disponíveis
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-4">
+            <div className="flex-1 space-y-2">
+              <Label htmlFor="worker_url">URL do Worker</Label>
+              <Input
+                id="worker_url"
+                value={workerUrl}
+                onChange={(e) => setWorkerUrl(e.target.value)}
+                placeholder="http://localhost:3001"
+              />
+              <p className="text-xs text-muted-foreground">
+                Endereço onde o worker está rodando
+              </p>
+            </div>
+            <div className="flex items-end">
+              <Button
+                onClick={handleScanNetwork}
+                disabled={scanning}
+                size="lg"
+              >
+                {scanning ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Escaneando...
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-4 h-4 mr-2" />
+                    Buscar
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Discovered Printers */}
+          {discoveredPrinters.length > 0 && (
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Printer className="w-4 h-4" />
+                Impressoras Encontradas ({discoveredPrinters.length})
+              </div>
+              <div className="grid gap-3">
+                {discoveredPrinters.map((printer) => (
+                  <div
+                    key={printer.ip}
+                    className={`flex items-center justify-between p-4 border rounded-lg transition-all hover:border-primary cursor-pointer ${
+                      config.printer_ip === printer.ip ? 'border-primary bg-primary/5' : ''
+                    }`}
+                    onClick={() => handleSelectPrinter(printer)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${
+                        config.printer_ip === printer.ip ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                      }`}>
+                        <Printer className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{printer.name}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Wifi className="w-3 h-3" />
+                          <span>{printer.ip}:{printer.port}</span>
+                          {printer.latency && (
+                            <>
+                              <Clock className="w-3 h-3 ml-2" />
+                              <span>{printer.latency}ms</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={printer.status === 'online' ? 'default' : 'secondary'}>
+                        {printer.status === 'online' ? 'Online' : 'Offline'}
+                      </Badge>
+                      {config.printer_ip === printer.ip && (
+                        <CheckCircle className="w-5 h-5 text-primary" />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {scanning && (
+            <Alert>
+              <AlertDescription className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                Escaneando rede local... Isso pode levar até 2 minutos. Por favor, aguarde.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Configuration Form */}

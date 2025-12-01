@@ -5,6 +5,7 @@ import path from 'path';
 import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import http from 'http';
 
 dotenv.config();
 
@@ -499,8 +500,158 @@ async function startWorker() {
   });
 }
 
-// Start the worker
-startWorker().catch((error) => {
-  console.error('Fatal error starting worker:', error);
+/**
+ * Scan network for printers
+ */
+async function scanNetwork() {
+  console.log('🔍 Starting network scan for printers...');
+  
+  const results = [];
+  const baseIP = process.env.BASE_IP || '192.168.1'; // Configurable base IP
+  const port = parseInt(process.env.PRINTER_PORT || '9100');
+  const timeout = 2000; // 2 second timeout per IP
+  
+  // Scan common IPs in parallel (batches of 20)
+  const commonIPs = [];
+  for (let i = 1; i <= 255; i++) {
+    commonIPs.push(`${baseIP}.${i}`);
+  }
+  
+  // Process in batches to avoid overwhelming the network
+  const batchSize = 20;
+  for (let i = 0; i < commonIPs.length; i += batchSize) {
+    const batch = commonIPs.slice(i, i + batchSize);
+    const batchResults = await Promise.all(
+      batch.map(ip => testPrinterConnection(ip, port, timeout))
+    );
+    
+    results.push(...batchResults.filter(r => r.available));
+    
+    // Log progress
+    const progress = Math.min(100, Math.round(((i + batchSize) / commonIPs.length) * 100));
+    console.log(`Scan progress: ${progress}%`);
+  }
+  
+  console.log(`✓ Network scan complete. Found ${results.length} printer(s)`);
+  return results;
+}
+
+/**
+ * Test printer connection
+ */
+async function testPrinterConnection(ip, port, timeout) {
+  return new Promise((resolve) => {
+    const startTime = Date.now();
+    const client = new net.Socket();
+    let resolved = false;
+    
+    const timer = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        client.destroy();
+        resolve({ ip, port, available: false });
+      }
+    }, timeout);
+    
+    client.connect(port, ip, () => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        const latency = Date.now() - startTime;
+        client.destroy();
+        resolve({ 
+          ip, 
+          port, 
+          available: true,
+          latency,
+          name: `Impressora ${ip}`,
+          status: 'online'
+        });
+      }
+    });
+    
+    client.on('error', () => {
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timer);
+        client.destroy();
+        resolve({ ip, port, available: false });
+      }
+    });
+  });
+}
+
+/**
+ * HTTP Server for admin interface
+ */
+function startHTTPServer() {
+  const server = http.createServer(async (req, res) => {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+    
+    // Health check
+    if (req.url === '/health') {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));
+      return;
+    }
+    
+    // Scan network
+    if (req.url === '/scan' && req.method === 'GET') {
+      try {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        const printers = await scanNetwork();
+        res.end(JSON.stringify({ success: true, printers }));
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: error.message }));
+      }
+      return;
+    }
+    
+    // Test specific printer
+    if (req.url?.startsWith('/test/') && req.method === 'GET') {
+      const ip = req.url.split('/test/')[1];
+      const port = parseInt(process.env.PRINTER_PORT || '9100');
+      
+      try {
+        const result = await testPrinterConnection(ip, port, 5000);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, result }));
+      } catch (error) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: error.message }));
+      }
+      return;
+    }
+    
+    // 404
+    res.writeHead(404, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Not found' }));
+  });
+  
+  const HTTP_PORT = process.env.HTTP_PORT || 3001;
+  server.listen(HTTP_PORT, () => {
+    console.log(`🌐 HTTP server running on http://localhost:${HTTP_PORT}`);
+    console.log(`   - GET /health - Health check`);
+    console.log(`   - GET /scan - Scan network for printers`);
+    console.log(`   - GET /test/:ip - Test specific printer`);
+  });
+}
+
+// Start the worker and HTTP server
+Promise.all([
+  startWorker(),
+  startHTTPServer()
+]).catch((error) => {
+  console.error('Fatal error starting services:', error);
   process.exit(1);
 });
