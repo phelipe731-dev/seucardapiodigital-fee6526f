@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -16,6 +16,7 @@ import PlansManager from "@/components/admin/PlansManager";
 import DashboardStats from "@/components/admin/DashboardStats";
 import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
 import ThemeCustomizer from "@/components/admin/ThemeCustomizer";
+import { POSView } from "@/components/admin/POSView";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
@@ -24,6 +25,7 @@ import { cn } from "@/lib/utils";
 
 const menuItems = [
   { title: "Dashboard", icon: BarChart3, section: "dashboard", category: "Principal" },
+  { title: "PDV", icon: CreditCard, section: "pos", category: "Principal" },
   { title: "Pedidos", icon: ShoppingBag, section: "orders", category: "Principal" },
   { title: "Produtos", icon: Package, section: "products", category: "Catálogo" },
   { title: "Categorias", icon: List, section: "categories", category: "Catálogo" },
@@ -160,6 +162,8 @@ export default function Admin() {
     switch (activeSection) {
       case "dashboard":
         return <DashboardStats />;
+      case "pos":
+        return <POSView />;
       case "restaurant":
         return <RestaurantForm />;
       case "categories":
