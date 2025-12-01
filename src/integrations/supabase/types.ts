@@ -208,6 +208,8 @@ export type Database = {
           id: string
           notes: string | null
           payment_method: string
+          printed: boolean | null
+          printed_at: string | null
           restaurant_id: string
           status: string | null
           total_amount: number
@@ -219,6 +221,8 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_method: string
+          printed?: boolean | null
+          printed_at?: string | null
           restaurant_id: string
           status?: string | null
           total_amount: number
@@ -230,6 +234,8 @@ export type Database = {
           id?: string
           notes?: string | null
           payment_method?: string
+          printed?: boolean | null
+          printed_at?: string | null
           restaurant_id?: string
           status?: string | null
           total_amount?: number
@@ -239,6 +245,56 @@ export type Database = {
             foreignKeyName: "orders_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      printer_configs: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          pdf_output_dir: string | null
+          print_retries: number | null
+          print_timeout_ms: number | null
+          printer_ip: string
+          printer_port: number
+          restaurant_id: string
+          save_pdf: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          pdf_output_dir?: string | null
+          print_retries?: number | null
+          print_timeout_ms?: number | null
+          printer_ip: string
+          printer_port?: number
+          restaurant_id: string
+          save_pdf?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          pdf_output_dir?: string | null
+          print_retries?: number | null
+          print_timeout_ms?: number | null
+          printer_ip?: string
+          printer_port?: number
+          restaurant_id?: string
+          save_pdf?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "printer_configs_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: true
             referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
