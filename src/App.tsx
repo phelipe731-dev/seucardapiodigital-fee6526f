@@ -18,6 +18,7 @@ import AdminMarketingUploads from "./pages/AdminMarketingUploads";
 import AdminMarketingPublic from "./pages/AdminMarketingPublic";
 import AdminMarketingMaterial from "./pages/AdminMarketingMaterial";
 import PrinterSettings from "./pages/admin/PrinterSettings";
+import Waiter from "./pages/Waiter";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/marketing/public" element={<AdminMarketingPublic />} />
             <Route path="/marketing/material/:id" element={<AdminMarketingMaterial />} />
             <Route path="/admin/printer" element={<PrinterSettings />} />
+            <Route path="/waiter" element={<Waiter />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
