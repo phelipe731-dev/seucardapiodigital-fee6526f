@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
@@ -17,11 +16,30 @@ import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
 import ThemeCustomizer from "@/components/admin/ThemeCustomizer";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger } from "@/components/ui/sidebar";
+import { NavLink } from "@/components/NavLink";
+
+const menuItems = [
+  { title: "Dashboard", icon: BarChart3, section: "dashboard" },
+  { title: "Restaurante", icon: Store, section: "restaurant" },
+  { title: "Categorias", icon: List, section: "categories" },
+  { title: "Produtos", icon: Package, section: "products" },
+  { title: "Opcionais", icon: Settings, section: "options" },
+  { title: "Delivery", icon: MapPin, section: "delivery" },
+  { title: "Pedidos", icon: ShoppingBag, section: "orders" },
+  { title: "WhatsApp", icon: MessageCircle, section: "whatsapp" },
+  { title: "Tema", icon: Palette, section: "theme" },
+  { title: "Planos", icon: Package, section: "plans" },
+  { title: "QR Code", icon: QrCode, section: "qrcode" },
+  { title: "Impressora", icon: Printer, section: "printer" },
+];
 
 export default function Admin() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const activeSection = searchParams.get("section") || "dashboard";
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -65,150 +83,116 @@ export default function Admin() {
     return null;
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <header className="bg-gradient-primary text-white shadow-elevated">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Painel Administrativo</h1>
+  const renderContent = () => {
+    switch (activeSection) {
+      case "dashboard":
+        return <DashboardStats />;
+      case "restaurant":
+        return <RestaurantForm />;
+      case "categories":
+        return <CategoriesManager />;
+      case "products":
+        return <ProductsManager />;
+      case "options":
+        return <ProductOptionsManager />;
+      case "delivery":
+        return <DeliveryZonesManager />;
+      case "orders":
+        return <OrdersView />;
+      case "whatsapp":
+        return <WhatsAppConnection />;
+      case "theme":
+        return <ThemeCustomizer />;
+      case "plans":
+        return <PlansManager />;
+      case "qrcode":
+        return <QRCodeView />;
+      case "printer":
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Sistema de Impressão</h2>
+              <p className="text-muted-foreground mb-6">
+                Configure a impressora térmica para impressão automática de pedidos.
+              </p>
+            </div>
             <Button
-              variant="secondary"
+              onClick={() => navigate("/admin/printer")}
+              className="w-full sm:w-auto"
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Abrir Configurações da Impressora
+            </Button>
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h3 className="font-semibold mb-2">📝 Instruções</h3>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                <li>Configure o worker Node.js (consulte printer-worker/README.md)</li>
+                <li>Obtenha o IP da sua impressora térmica</li>
+                <li>Configure na tela de configurações</li>
+                <li>Teste a impressão</li>
+                <li>Novos pedidos serão impressos automaticamente!</li>
+              </ol>
+            </div>
+          </div>
+        );
+      default:
+        return <DashboardStats />;
+    }
+  };
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <Sidebar collapsible="icon" className="border-r">
+          <SidebarContent>
+            <SidebarGroup>
+              <div className="px-3 py-2">
+                <h2 className="mb-2 px-4 text-lg font-semibold">Admin</h2>
+              </div>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.section}>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={`/admin?section=${item.section}`}
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:bg-accent"
+                          activeClassName="bg-accent text-accent-foreground font-medium"
+                        >
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+
+        <div className="flex-1 flex flex-col">
+          <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
+            <SidebarTrigger />
+            <div className="flex-1">
+              <h1 className="text-xl font-semibold">Painel Administrativo</h1>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleSignOut}
               className="gap-2"
             >
               <LogOut size={18} />
               Sair
             </Button>
-          </div>
+          </header>
+
+          <main className="flex-1 overflow-y-auto p-6">
+            {renderContent()}
+          </main>
         </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="dashboard" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-12 max-w-full overflow-x-auto">
-            <TabsTrigger value="dashboard" className="gap-2">
-              <BarChart3 size={18} />
-              Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="restaurant" className="gap-2">
-              <Store size={18} />
-              Restaurante
-            </TabsTrigger>
-            <TabsTrigger value="categories" className="gap-2">
-              <List size={18} />
-              Categorias
-            </TabsTrigger>
-            <TabsTrigger value="products" className="gap-2">
-              <Package size={18} />
-              Produtos
-            </TabsTrigger>
-            <TabsTrigger value="options" className="gap-2">
-              <Settings size={18} />
-              Opcionais
-            </TabsTrigger>
-            <TabsTrigger value="delivery" className="gap-2">
-              <MapPin size={18} />
-              Delivery
-            </TabsTrigger>
-            <TabsTrigger value="orders" className="gap-2">
-              <ShoppingBag size={18} />
-              Pedidos
-            </TabsTrigger>
-            <TabsTrigger value="whatsapp" className="gap-2">
-              <MessageCircle size={18} />
-              WhatsApp
-            </TabsTrigger>
-            <TabsTrigger value="theme" className="gap-2">
-              <Palette size={18} />
-              Tema
-            </TabsTrigger>
-            <TabsTrigger value="plans" className="gap-2">
-              <Package size={18} />
-              Planos
-            </TabsTrigger>
-            <TabsTrigger value="qrcode" className="gap-2">
-              <QrCode size={18} />
-              QR Code
-            </TabsTrigger>
-            <TabsTrigger value="printer" className="gap-2">
-              <Printer size={18} />
-              Impressora
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="dashboard">
-            <DashboardStats />
-          </TabsContent>
-
-          <TabsContent value="restaurant">
-            <RestaurantForm />
-          </TabsContent>
-
-          <TabsContent value="categories">
-            <CategoriesManager />
-          </TabsContent>
-
-          <TabsContent value="products">
-            <ProductsManager />
-          </TabsContent>
-
-          <TabsContent value="options">
-            <ProductOptionsManager />
-          </TabsContent>
-
-          <TabsContent value="delivery">
-            <DeliveryZonesManager />
-          </TabsContent>
-
-          <TabsContent value="orders">
-            <OrdersView />
-          </TabsContent>
-
-          <TabsContent value="whatsapp">
-            <WhatsAppConnection />
-          </TabsContent>
-
-          <TabsContent value="theme">
-            <ThemeCustomizer />
-          </TabsContent>
-
-          <TabsContent value="plans">
-            <PlansManager />
-          </TabsContent>
-
-          <TabsContent value="qrcode">
-            <QRCodeView />
-          </TabsContent>
-
-          <TabsContent value="printer">
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold mb-4">Sistema de Impressão</h2>
-                <p className="text-muted-foreground mb-6">
-                  Configure a impressora térmica para impressão automática de pedidos.
-                </p>
-              </div>
-              <Button
-                onClick={() => navigate("/admin/printer")}
-                className="w-full sm:w-auto"
-              >
-                <Printer className="w-4 h-4 mr-2" />
-                Abrir Configurações da Impressora
-              </Button>
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <h3 className="font-semibold mb-2">📝 Instruções</h3>
-                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
-                  <li>Configure o worker Node.js (consulte printer-worker/README.md)</li>
-                  <li>Obtenha o IP da sua impressora térmica</li>
-                  <li>Configure na tela de configurações</li>
-                  <li>Teste a impressão</li>
-                  <li>Novos pedidos serão impressos automaticamente!</li>
-                </ol>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 }
