@@ -198,6 +198,12 @@ export default function Admin() {
         return <PlansManager />;
       case "qrcode":
         return <QRCodeView />;
+      case "coupons":
+        return <CouponsManager restaurantId={restaurant?.id || ""} />;
+      case "rewards":
+        return <LoyaltyRewardsManager restaurantId={restaurant?.id || ""} />;
+      case "combos":
+        return <CombosManager restaurantId={restaurant?.id || ""} />;
       case "printer":
         return (
           <div className="space-y-6">
