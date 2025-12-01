@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard, Award, Users } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard, Award, Users, Tag, Gift } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -19,6 +19,9 @@ import ThemeCustomizer from "@/components/admin/ThemeCustomizer";
 import { POSView } from "@/components/admin/POSView";
 import LoyaltyView from "@/components/admin/LoyaltyView";
 import WaitersManager from "@/components/admin/WaitersManager";
+import CouponsManager from "@/components/admin/CouponsManager";
+import LoyaltyRewardsManager from "@/components/admin/LoyaltyRewardsManager";
+import CombosManager from "@/components/admin/CombosManager";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
@@ -31,6 +34,9 @@ const menuItems = [
   { title: "Pedidos", icon: ShoppingBag, section: "orders", category: "Principal" },
   { title: "Fidelidade", icon: Award, section: "loyalty", category: "Principal" },
   { title: "Garçons", icon: Users, section: "waiters", category: "Principal" },
+  { title: "Cupons", icon: Tag, section: "coupons", category: "Marketing" },
+  { title: "Recompensas", icon: Gift, section: "rewards", category: "Marketing" },
+  { title: "Combos", icon: Package, section: "combos", category: "Marketing" },
   { title: "Produtos", icon: Package, section: "products", category: "Catálogo" },
   { title: "Categorias", icon: List, section: "categories", category: "Catálogo" },
   { title: "Opcionais", icon: Settings, section: "options", category: "Catálogo" },

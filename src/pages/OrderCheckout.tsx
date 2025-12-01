@@ -15,6 +15,7 @@ import { ArrowLeft, ShoppingBag, Trash2, MessageCircle, Loader2 } from "lucide-r
 import { sendOrderViaWhatsApp, isWhatsAppConfigured } from "@/utils/whatsapp";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import CouponInput from "@/components/checkout/CouponInput";
 
 interface DeliveryZone {
   id: string;
@@ -34,7 +35,20 @@ export default function OrderCheckout() {
   const navigate = useNavigate();
   const { restaurantId } = useParams();
   const [searchParams] = useSearchParams();
-  const { items, clearCart, subtotal, deliveryFee, setDeliveryFee } = useCart();
+  const { 
+    items, 
+    clearCart, 
+    subtotal, 
+    deliveryFee, 
+    setDeliveryFee,
+    couponDiscount,
+    setCouponDiscount,
+    appliedCouponId,
+    setAppliedCouponId,
+    appliedCouponCode,
+    setAppliedCouponCode,
+    total
+  } = useCart();
   
   // Pega o número da mesa da URL se existir
   const tableFromUrl = searchParams.get("mesa");
@@ -212,8 +226,6 @@ export default function OrderCheckout() {
     }
   };
 
-  const total = subtotal + deliveryFee;
-
   if (!restaurant) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -289,21 +301,47 @@ export default function OrderCheckout() {
             
             <Separator />
             
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-              </div>
-              {deliveryFee > 0 && (
-                <div className="flex justify-between">
-                  <span>Taxa de entrega</span>
-                  <span>{deliveryFee.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
-                </div>
-              )}
+            <div className="space-y-3">
+              <CouponInput
+                restaurantId={restaurantId!}
+                subtotal={subtotal}
+                onCouponApplied={(discount, couponId, couponCode) => {
+                  setCouponDiscount(discount);
+                  setAppliedCouponId(couponId);
+                  setAppliedCouponCode(couponCode);
+                }}
+                onCouponRemoved={() => {
+                  setCouponDiscount(0);
+                  setAppliedCouponId(null);
+                  setAppliedCouponCode(null);
+                }}
+                appliedCouponCode={appliedCouponCode || undefined}
+              />
+              
               <Separator />
-              <div className="flex justify-between text-lg font-bold">
-                <span>Total</span>
-                <span>{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+              
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>{subtotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                </div>
+                {couponDiscount > 0 && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Desconto</span>
+                    <span>-{couponDiscount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                  </div>
+                )}
+                {deliveryFee > 0 && (
+                  <div className="flex justify-between">
+                    <span>Taxa de entrega</span>
+                    <span>{deliveryFee.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                  </div>
+                )}
+                <Separator />
+                <div className="flex justify-between text-lg font-bold">
+                  <span>Total</span>
+                  <span>{total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</span>
+                </div>
               </div>
             </div>
           </CardContent>

@@ -55,6 +55,202 @@ export type Database = {
           },
         ]
       }
+      combo_items: {
+        Row: {
+          combo_id: string
+          created_at: string | null
+          id: string
+          product_id: string
+          quantity: number | null
+        }
+        Insert: {
+          combo_id: string
+          created_at?: string | null
+          id?: string
+          product_id: string
+          quantity?: number | null
+        }
+        Update: {
+          combo_id?: string
+          created_at?: string | null
+          id?: string
+          product_id?: string
+          quantity?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combo_items_combo_id_fkey"
+            columns: ["combo_id"]
+            isOneToOne: false
+            referencedRelation: "combos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combo_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      combos: {
+        Row: {
+          available_days: string[] | null
+          available_end_time: string | null
+          available_start_time: string | null
+          combo_price: number
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          original_price: number
+          restaurant_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_days?: string[] | null
+          available_end_time?: string | null
+          available_start_time?: string | null
+          combo_price: number
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          original_price: number
+          restaurant_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_days?: string[] | null
+          available_end_time?: string | null
+          available_start_time?: string | null
+          combo_price?: number
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          original_price?: number
+          restaurant_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combos_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupon_uses: {
+        Row: {
+          coupon_id: string
+          created_at: string | null
+          customer_phone: string | null
+          discount_amount: number
+          id: string
+          order_id: string | null
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string | null
+          customer_phone?: string | null
+          discount_amount: number
+          id?: string
+          order_id?: string | null
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string | null
+          customer_phone?: string | null
+          discount_amount?: number
+          id?: string
+          order_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_uses_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_uses_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string | null
+          current_uses: number | null
+          end_date: string | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          min_order: number | null
+          restaurant_id: string
+          start_date: string | null
+          type: string
+          updated_at: string | null
+          value: number
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          current_uses?: number | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          min_order?: number | null
+          restaurant_id: string
+          start_date?: string | null
+          type: string
+          updated_at?: string | null
+          value: number
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          current_uses?: number | null
+          end_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          min_order?: number | null
+          restaurant_id?: string
+          start_date?: string | null
+          type?: string
+          updated_at?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       delivery_zones: {
         Row: {
           created_at: string | null
@@ -136,6 +332,121 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "loyalty_customers_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_redemptions: {
+        Row: {
+          created_at: string | null
+          customer_phone: string
+          id: string
+          order_id: string | null
+          points_spent: number
+          restaurant_id: string
+          reward_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_phone: string
+          id?: string
+          order_id?: string | null
+          points_spent: number
+          restaurant_id: string
+          reward_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_phone?: string
+          id?: string
+          order_id?: string | null
+          points_spent?: number
+          restaurant_id?: string
+          reward_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_redemptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_redemptions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "loyalty_rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_rewards: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          points_required: number
+          product_id: string | null
+          restaurant_id: string
+          reward_type: string
+          reward_value: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          points_required: number
+          product_id?: string | null
+          restaurant_id: string
+          reward_type: string
+          reward_value?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          points_required?: number
+          product_id?: string | null
+          restaurant_id?: string
+          reward_type?: string
+          reward_value?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_rewards_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_rewards_restaurant_id_fkey"
             columns: ["restaurant_id"]
             isOneToOne: false
             referencedRelation: "restaurants"

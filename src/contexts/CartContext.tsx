@@ -29,6 +29,12 @@ interface CartContextType {
   clearCart: () => void;
   deliveryFee: number;
   setDeliveryFee: (fee: number) => void;
+  couponDiscount: number;
+  setCouponDiscount: (discount: number) => void;
+  appliedCouponId: string | null;
+  setAppliedCouponId: (id: string | null) => void;
+  appliedCouponCode: string | null;
+  setAppliedCouponCode: (code: string | null) => void;
   total: number;
   subtotal: number;
 }
@@ -38,6 +44,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [appliedCouponId, setAppliedCouponId] = useState<string | null>(null);
+  const [appliedCouponCode, setAppliedCouponCode] = useState<string | null>(null);
 
   const addItem = (item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     setItems((prev) => {
@@ -97,6 +106,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = () => {
     setItems([]);
     setDeliveryFee(0);
+    setCouponDiscount(0);
+    setAppliedCouponId(null);
+    setAppliedCouponCode(null);
   };
 
   const calculateItemTotal = (item: CartItem) => {
@@ -112,7 +124,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const subtotal = items.reduce((sum, item) => sum + calculateItemTotal(item), 0);
-  const total = subtotal + deliveryFee;
+  const total = Math.max(0, subtotal - couponDiscount + deliveryFee);
 
   return (
     <CartContext.Provider
@@ -125,6 +137,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
         clearCart,
         deliveryFee,
         setDeliveryFee,
+        couponDiscount,
+        setCouponDiscount,
+        appliedCouponId,
+        setAppliedCouponId,
+        appliedCouponCode,
+        setAppliedCouponCode,
         total,
         subtotal,
       }}
