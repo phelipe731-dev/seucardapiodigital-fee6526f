@@ -910,6 +910,7 @@ export type Database = {
           image_url: string | null
           is_active: boolean | null
           is_available: boolean | null
+          is_daily_deal: boolean | null
           name: string
           preparation_time: number | null
           price: number
@@ -924,6 +925,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean | null
           is_available?: boolean | null
+          is_daily_deal?: boolean | null
           name: string
           preparation_time?: number | null
           price: number
@@ -938,6 +940,7 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean | null
           is_available?: boolean | null
+          is_daily_deal?: boolean | null
           name?: string
           preparation_time?: number | null
           price?: number
