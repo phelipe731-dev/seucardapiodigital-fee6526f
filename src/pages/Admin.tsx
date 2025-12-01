@@ -199,11 +199,32 @@ export default function Admin() {
       case "qrcode":
         return <QRCodeView />;
       case "coupons":
-        return <CouponsManager restaurantId={restaurant?.id || ""} />;
+        if (!restaurant?.id) {
+          return (
+            <div className="flex items-center justify-center p-8">
+              <p className="text-muted-foreground">Carregando...</p>
+            </div>
+          );
+        }
+        return <CouponsManager restaurantId={restaurant.id} />;
       case "rewards":
-        return <LoyaltyRewardsManager restaurantId={restaurant?.id || ""} />;
+        if (!restaurant?.id) {
+          return (
+            <div className="flex items-center justify-center p-8">
+              <p className="text-muted-foreground">Carregando...</p>
+            </div>
+          );
+        }
+        return <LoyaltyRewardsManager restaurantId={restaurant.id} />;
       case "combos":
-        return <CombosManager restaurantId={restaurant?.id || ""} />;
+        if (!restaurant?.id) {
+          return (
+            <div className="flex items-center justify-center p-8">
+              <p className="text-muted-foreground">Carregando...</p>
+            </div>
+          );
+        }
+        return <CombosManager restaurantId={restaurant.id} />;
       case "printer":
         return (
           <div className="space-y-6">
