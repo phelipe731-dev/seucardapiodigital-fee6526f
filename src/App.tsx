@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import Menu from "./pages/Menu";
 import OrderTracking from "./pages/OrderTracking";
 import OrderHistory from "./pages/OrderHistory";
+import OrderCheckout from "./pages/OrderCheckout";
 import NotFound from "./pages/NotFound";
 import AdminMarketing from "./pages/AdminMarketing";
 import AdminMarketingLogin from "./pages/AdminMarketingLogin";
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/menu/:restaurantId" element={<Menu />} />
+            <Route path="/checkout/:restaurantId" element={<OrderCheckout />} />
             <Route path="/pedido" element={<OrderTracking />} />
             <Route path="/historico" element={<OrderHistory />} />
             <Route path="/marketing" element={<AdminMarketing />} />
