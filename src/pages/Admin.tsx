@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard, Award } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard, Award, Users } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -18,6 +18,7 @@ import DeliveryZonesManager from "@/components/admin/DeliveryZonesManager";
 import ThemeCustomizer from "@/components/admin/ThemeCustomizer";
 import { POSView } from "@/components/admin/POSView";
 import LoyaltyView from "@/components/admin/LoyaltyView";
+import WaitersManager from "@/components/admin/WaitersManager";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
@@ -29,6 +30,7 @@ const menuItems = [
   { title: "PDV", icon: CreditCard, section: "pos", category: "Principal" },
   { title: "Pedidos", icon: ShoppingBag, section: "orders", category: "Principal" },
   { title: "Fidelidade", icon: Award, section: "loyalty", category: "Principal" },
+  { title: "Garçons", icon: Users, section: "waiters", category: "Principal" },
   { title: "Produtos", icon: Package, section: "products", category: "Catálogo" },
   { title: "Categorias", icon: List, section: "categories", category: "Catálogo" },
   { title: "Opcionais", icon: Settings, section: "options", category: "Catálogo" },
@@ -168,6 +170,8 @@ export default function Admin() {
         return <POSView />;
       case "loyalty":
         return <LoyaltyView />;
+      case "waiters":
+        return <WaitersManager />;
       case "restaurant":
         return <RestaurantForm />;
       case "categories":
