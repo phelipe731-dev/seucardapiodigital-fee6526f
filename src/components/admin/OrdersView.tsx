@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Clock, Phone, User } from "lucide-react";
+import { Clock, Phone, User, Filter } from "lucide-react";
 import { toast } from "sonner";
 
 interface Order {
@@ -21,8 +22,29 @@ interface Order {
 
 export function OrdersView() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const audioContextRef = useRef<AudioContext | null>(null);
+
+  useEffect(() => {
+    // Filter orders based on status and search
+    let filtered = orders;
+
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(order => order.status === statusFilter);
+    }
+
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(order =>
+        order.customer_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customer_phone?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    setFilteredOrders(filtered);
+  }, [orders, statusFilter, searchQuery]);
 
   useEffect(() => {
     // Request notification permission
@@ -217,14 +239,46 @@ export function OrdersView() {
           Gerencie os pedidos do seu restaurante
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        {orders.length === 0 ? (
+      <CardContent className="space-y-4">
+        {/* Filters */}
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex-1">
+            <Input
+              placeholder="Buscar por nome ou telefone..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-full sm:w-[200px]">
+              <Filter className="h-4 w-4 mr-2" />
+              <SelectValue placeholder="Filtrar status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os status</SelectItem>
+              <SelectItem value="pending">Pendente</SelectItem>
+              <SelectItem value="confirmed">Confirmado</SelectItem>
+              <SelectItem value="preparing">Preparando</SelectItem>
+              <SelectItem value="ready">Pronto</SelectItem>
+              <SelectItem value="out_for_delivery">Saiu para Entrega</SelectItem>
+              <SelectItem value="completed">Concluído</SelectItem>
+              <SelectItem value="cancelled">Cancelado</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Results count */}
+        <div className="text-sm text-muted-foreground">
+          {filteredOrders.length} {filteredOrders.length === 1 ? "pedido encontrado" : "pedidos encontrados"}
+        </div>
+
+        {filteredOrders.length === 0 ? (
           <p className="text-center text-muted-foreground py-8">
-            Nenhum pedido recebido ainda
+            Nenhum pedido encontrado
           </p>
         ) : (
           <div className="space-y-4">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div key={order.id} className="border rounded-lg p-4 space-y-4">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2">
