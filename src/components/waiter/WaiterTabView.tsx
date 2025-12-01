@@ -199,13 +199,13 @@ export function WaiterTabView({ tabId, onBack, onSaved, waiterId }: WaiterTabVie
       const total = calculateTotal();
       const tabData = {
         restaurant_id: restaurant.id,
+        waiter_id: waiterId,
         tab_number: tabNumber,
         customer_name: customerName || null,
         customer_phone: customerPhone || null,
         items: JSON.parse(JSON.stringify(cart)) as any,
         total_amount: total,
-        notes: notes || null,
-        waiter_id: waiterId
+        notes: notes || null
       };
 
       if (tabId) {
