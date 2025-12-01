@@ -1,0 +1,18 @@
+[Unit]
+Description=Order Printer Worker
+After=network.target
+
+[Service]
+Type=simple
+User=printer
+WorkingDirectory=/opt/order-printer-worker
+Environment="NODE_ENV=production"
+EnvironmentFile=/opt/order-printer-worker/.env
+ExecStart=/usr/bin/node worker.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
