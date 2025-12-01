@@ -22,7 +22,7 @@ export function WhatsAppConnection() {
   const [loading, setLoading] = useState(false);
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [status, setStatus] = useState<WhatsAppStatus>({ ready: false, connected: false });
-  const [workerUrl, setWorkerUrl] = useState("http://localhost:3002");
+  const workerUrl = "http://localhost:3002"; // URL fixa do worker
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState("Olá! Esta é uma mensagem de teste do sistema.");
 
@@ -180,21 +180,6 @@ export function WhatsAppConnection() {
             </Badge>
           </div>
 
-          {/* Worker URL Config */}
-          <div className="space-y-2">
-            <Label htmlFor="worker_url">URL do Worker WhatsApp</Label>
-            <Input
-              id="worker_url"
-              value={workerUrl}
-              onChange={(e) => setWorkerUrl(e.target.value)}
-              placeholder="http://localhost:3002"
-              disabled={loading}
-            />
-            <p className="text-xs text-muted-foreground">
-              Endereço onde o worker WhatsApp está rodando
-            </p>
-          </div>
-
           {/* QR Code */}
           {qrCode && (
             <div className="flex flex-col items-center justify-center p-6 border rounded-lg bg-muted/30">
@@ -319,20 +304,18 @@ export function WhatsAppConnection() {
           </div>
 
           <div className="p-4 border rounded-lg bg-muted/30 space-y-2">
-            <p className="font-medium text-sm">🚀 Instalação do Worker:</p>
+            <p className="font-medium text-sm">🚀 Como Usar:</p>
             <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
-              <li>Abra o terminal na pasta whatsapp-worker/</li>
-              <li>Execute: <code className="bg-muted px-1 py-0.5 rounded">npm install</code></li>
-              <li>Configure o .env com sua Service Key do Supabase</li>
-              <li>Execute: <code className="bg-muted px-1 py-0.5 rounded">npm start</code></li>
-              <li>Volte aqui e clique em "Conectar WhatsApp"</li>
+              <li>Clique no botão "Conectar WhatsApp"</li>
+              <li>Escaneie o QR Code com seu WhatsApp</li>
+              <li>Pronto! As notificações serão enviadas automaticamente</li>
             </ol>
           </div>
 
           <Alert>
             <AlertDescription className="text-xs">
-              <strong>⚠️ Importante:</strong> Mantenha o worker rodando para as notificações funcionarem. 
-              Use Docker, PM2 ou systemd para manter em produção.
+              <strong>💡 Dica:</strong> Use a mesma conta WhatsApp que você usa para atender seus clientes. 
+              As mensagens sairão do seu número e os clientes poderão responder normalmente.
             </AlertDescription>
           </Alert>
         </CardContent>
