@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles, History, Calendar } from "lucide-react";
+import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles, History, Calendar, Star } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
@@ -70,6 +70,7 @@ export default function Menu() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [dailyDeals, setDailyDeals] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -144,7 +145,14 @@ export default function Menu() {
         .eq("is_active", true);
 
       if (productsError) throw productsError;
-      setProducts(productsData || []);
+      
+      // Separar produtos em destaque e normais
+      const allProducts = productsData || [];
+      const dealsProducts = allProducts.filter(p => p.is_daily_deal);
+      const regularProducts = allProducts.filter(p => !p.is_daily_deal);
+      
+      setDailyDeals(dealsProducts);
+      setProducts(regularProducts);
     } catch (error: any) {
       toast.error("Erro ao carregar cardápio");
       console.error(error);
@@ -474,6 +482,96 @@ export default function Menu() {
 
       {/* Menu */}
       <main className="container mx-auto px-4 py-8 pb-24">
+        {/* Promoções do Dia - Destaque Especial */}
+        {dailyDeals.length > 0 && !searchTerm && (
+          <section className="mb-12 animate-fade-in-up">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-1 shadow-2xl">
+              <div className="bg-background rounded-3xl p-6 sm:p-8">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="relative">
+                    <Star className="h-10 w-10 text-yellow-500 animate-pulse" fill="currentColor" />
+                    <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-orange-500 animate-bounce" />
+                  </div>
+                  <h2 className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
+                    PROMOÇÃO DO DIA!
+                  </h2>
+                  <div className="relative">
+                    <Star className="h-10 w-10 text-yellow-500 animate-pulse" fill="currentColor" />
+                    <Sparkles className="absolute -top-2 -left-2 h-6 w-6 text-orange-500 animate-bounce" />
+                  </div>
+                </div>
+                
+                <p className="text-center text-muted-foreground text-lg font-semibold mb-8 animate-pulse">
+                  🔥 Aproveite as ofertas especiais de hoje! 🔥
+                </p>
+
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {dailyDeals.map((product, idx) => (
+                    <Card 
+                      key={product.id} 
+                      className="group relative overflow-hidden border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 hover:shadow-2xl hover:scale-105 transition-all duration-300 animate-fade-in-up"
+                      style={{ animationDelay: `${idx * 0.1}s` }}
+                    >
+                      {/* Badge de Destaque Animado */}
+                      <div className="absolute top-3 right-3 z-10">
+                        <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold text-xs shadow-xl animate-bounce">
+                          <Star className="h-3 w-3 mr-1" fill="currentColor" />
+                          DESTAQUE
+                        </Badge>
+                      </div>
+
+                      {product.image_url && (
+                        <div className="relative h-56 overflow-hidden">
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        </div>
+                      )}
+
+                      <CardHeader className="relative pb-3">
+                        <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
+                          {product.name}
+                          <Sparkles className="h-5 w-5 text-yellow-500" />
+                        </CardTitle>
+                        {product.description && (
+                          <CardDescription className="text-base line-clamp-2 text-muted-foreground">
+                            {product.description}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+
+                      <CardContent className="space-y-4">
+                        <div className="flex items-baseline justify-between">
+                          <div className="flex flex-col">
+                            <span className="text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                              R$ {product.price.toFixed(2)}
+                            </span>
+                            <span className="text-xs text-muted-foreground font-semibold">
+                              💥 Oferta Especial
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => handleAddToCart(product)}
+                          disabled={!isRestaurantOpen()}
+                          className="w-full h-12 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold text-lg shadow-xl group-hover:shadow-2xl transition-all"
+                        >
+                          <Plus className="mr-2 h-5 w-5" />
+                          Adicionar
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
         {searchTerm && (
           <div className="mb-6 p-4 bg-primary/10 rounded-xl border-2 border-primary/30 animate-fade-in-up">
             <p className="text-foreground font-semibold">

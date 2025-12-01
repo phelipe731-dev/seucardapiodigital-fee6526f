@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard, Award, Users, Tag, Gift, Calendar } from "lucide-react";
+import { LogOut, Store, Package, List, QrCode, ShoppingBag, BarChart3, MapPin, Palette, Settings, MessageCircle, Printer, Search, Menu, Crown, HelpCircle, CreditCard, Award, Users, Tag, Gift, Calendar, Star } from "lucide-react";
 import { RestaurantForm } from "@/components/admin/RestaurantForm";
 import { CategoriesManager } from "@/components/admin/CategoriesManager";
 import { ProductsManager } from "@/components/admin/ProductsManager";
@@ -26,6 +26,7 @@ import ReviewsManager from "@/components/admin/ReviewsManager";
 import AdvancedAnalytics from "@/components/admin/AdvancedAnalytics";
 import TablesManager from "@/components/admin/TablesManager";
 import ReservationsManager from "@/components/admin/ReservationsManager";
+import DailyDealsManager from "@/components/admin/DailyDealsManager";
 import { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader, useSidebar } from "@/components/ui/sidebar";
@@ -41,6 +42,7 @@ const menuItems = [
   { title: "Cupons", icon: Tag, section: "coupons", category: "Marketing" },
   { title: "Recompensas", icon: Gift, section: "rewards", category: "Marketing" },
   { title: "Combos", icon: Package, section: "combos", category: "Marketing" },
+  { title: "Promoção do Dia", icon: Star, section: "daily-deals", category: "Marketing" },
   { title: "Avaliações", icon: MessageCircle, section: "reviews", category: "Marketing" },
   { title: "Analytics", icon: BarChart3, section: "analytics", category: "Marketing" },
   { title: "Produtos", icon: Package, section: "products", category: "Catálogo" },
@@ -233,6 +235,8 @@ export default function Admin() {
           );
         }
         return <CombosManager restaurantId={restaurant.id} />;
+      case "daily-deals":
+        return <DailyDealsManager />;
       case "reviews":
         return <ReviewsManager />;
       case "analytics":
