@@ -42,6 +42,7 @@ export default function Admin() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [restaurant, setRestaurant] = useState<any>(null);
   const activeSection = searchParams.get("section") || "dashboard";
 
   const filteredMenuItems = menuItems.filter(item =>
@@ -76,6 +77,21 @@ export default function Admin() {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from("restaurants")
+        .select("*")
+        .eq("owner_id", user.id)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setRestaurant(data);
+          }
+        });
+    }
+  }, [user]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -160,12 +176,20 @@ export default function Admin() {
       <div className="min-h-screen flex w-full bg-background">
         <Sidebar collapsible="icon" className="border-r bg-card">
           <SidebarHeader className="border-b px-4 py-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Store className="h-4 w-4" />
-              </div>
+            <div className="flex items-center gap-3">
+              {restaurant?.logo_url ? (
+                <img 
+                  src={restaurant.logo_url} 
+                  alt={restaurant.name} 
+                  className="h-10 w-10 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <Store className="h-5 w-5" />
+                </div>
+              )}
               <div className="flex flex-col">
-                <span className="text-sm font-semibold">Admin Panel</span>
+                <span className="text-sm font-semibold">{restaurant?.name || "Admin Panel"}</span>
                 <span className="text-xs text-muted-foreground">Gerenciamento</span>
               </div>
             </div>
