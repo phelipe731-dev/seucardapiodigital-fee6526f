@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Calendar, Clock, Users, Phone, Mail, Plus, Pencil, X, Check } from "lucide-react";
+import { Calendar, Clock, Users, Phone, Mail, Plus, Pencil, X, Check, Link2, Copy } from "lucide-react";
 import { format } from "date-fns";
 
 interface Reservation {
@@ -183,8 +183,68 @@ export default function ReservationsManager() {
     return <div className="text-center py-8">Carregando...</div>;
   }
 
+  const reservationUrl = restaurantId 
+    ? `${window.location.origin}/reservar/${restaurantId}`
+    : '';
+
+  const copyReservationUrl = () => {
+    if (reservationUrl) {
+      navigator.clipboard.writeText(reservationUrl);
+      toast.success("Link copiado para a área de transferência!");
+    }
+  };
+
   return (
     <div className="space-y-6">
+      {/* Card de destaque com link público */}
+      {restaurantId && (
+        <Card className="bg-gradient-to-r from-primary/10 to-secondary/10 border-2 border-primary/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <Link2 className="h-5 w-5" />
+              Link Público para Reservas
+            </CardTitle>
+            <CardDescription>
+              Compartilhe este link com seus clientes para que possam fazer reservas online
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-2 p-3 bg-background rounded-lg border">
+              <code className="flex-1 text-sm break-all">{reservationUrl}</code>
+              <Button 
+                size="sm" 
+                variant="secondary"
+                onClick={copyReservationUrl}
+              >
+                <Copy className="h-4 w-4 mr-1" />
+                Copiar
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.open(reservationUrl, '_blank')}
+                className="flex-1"
+              >
+                Abrir em Nova Aba
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const whatsappText = `Olá! Reserve sua mesa através deste link: ${reservationUrl}`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`, '_blank');
+                }}
+                className="flex-1"
+              >
+                Compartilhar no WhatsApp
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">Reservas</h2>
