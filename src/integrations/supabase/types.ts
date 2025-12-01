@@ -203,6 +203,7 @@ export type Database = {
           tab_number: string
           total_amount: number
           updated_at: string | null
+          waiter_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -215,6 +216,7 @@ export type Database = {
           tab_number: string
           total_amount?: number
           updated_at?: string | null
+          waiter_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -227,6 +229,7 @@ export type Database = {
           tab_number?: string
           total_amount?: number
           updated_at?: string | null
+          waiter_id?: string | null
         }
         Relationships: [
           {
@@ -355,6 +358,7 @@ export type Database = {
           restaurant_id: string
           status: string | null
           total_amount: number
+          waiter_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -368,6 +372,7 @@ export type Database = {
           restaurant_id: string
           status?: string | null
           total_amount: number
+          waiter_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -381,6 +386,7 @@ export type Database = {
           restaurant_id?: string
           status?: string | null
           total_amount?: number
+          waiter_id?: string | null
         }
         Relationships: [
           {
@@ -840,6 +846,54 @@ export type Database = {
             columns: ["plan_id"]
             isOneToOne: false
             referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      waiter_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          order_id: string | null
+          rating: number
+          restaurant_id: string
+          updated_at: string | null
+          waiter_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          order_id?: string | null
+          rating: number
+          restaurant_id: string
+          updated_at?: string | null
+          waiter_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          order_id?: string | null
+          rating?: number
+          restaurant_id?: string
+          updated_at?: string | null
+          waiter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waiter_ratings_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "waiter_ratings_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
         ]

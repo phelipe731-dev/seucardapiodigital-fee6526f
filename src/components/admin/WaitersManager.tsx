@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { UserPlus, Trash2, Mail, Lock, User, Loader2 } from "lucide-react";
+import { UserPlus, Trash2, Mail, Lock, User, Loader2, Trophy } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import WaiterRankings from "./WaiterRankings";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -163,13 +165,26 @@ export default function WaitersManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Gerenciar Garçons</h2>
-          <p className="text-muted-foreground">
-            Adicione e remova acesso de garçons ao sistema
-          </p>
-        </div>
+      <Tabs defaultValue="list" className="space-y-6">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="list" className="gap-2">
+            <User className="h-4 w-4" />
+            Lista de Garçons
+          </TabsTrigger>
+          <TabsTrigger value="rankings" className="gap-2">
+            <Trophy className="h-4 w-4" />
+            Rankings
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="list" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">Gerenciar Garçons</h2>
+              <p className="text-muted-foreground">
+                Adicione e remova acesso de garçons ao sistema
+              </p>
+            </div>
         
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
@@ -328,6 +343,12 @@ export default function WaitersManager() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+        </TabsContent>
+
+        <TabsContent value="rankings">
+          <WaiterRankings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
