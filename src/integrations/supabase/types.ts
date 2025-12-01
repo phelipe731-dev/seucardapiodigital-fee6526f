@@ -96,6 +96,101 @@ export type Database = {
           },
         ]
       }
+      loyalty_customers: {
+        Row: {
+          created_at: string | null
+          customer_name: string | null
+          customer_phone: string
+          id: string
+          points: number | null
+          restaurant_id: string
+          tier: string | null
+          total_spent: number | null
+          updated_at: string | null
+          visit_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_name?: string | null
+          customer_phone: string
+          id?: string
+          points?: number | null
+          restaurant_id: string
+          tier?: string | null
+          total_spent?: number | null
+          updated_at?: string | null
+          visit_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_name?: string | null
+          customer_phone?: string
+          id?: string
+          points?: number | null
+          restaurant_id?: string
+          tier?: string | null
+          total_spent?: number | null
+          updated_at?: string | null
+          visit_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_customers_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loyalty_transactions: {
+        Row: {
+          created_at: string | null
+          customer_phone: string
+          description: string | null
+          id: string
+          order_id: string | null
+          points_earned: number
+          restaurant_id: string
+          transaction_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          customer_phone: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          points_earned: number
+          restaurant_id: string
+          transaction_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          customer_phone?: string
+          description?: string | null
+          id?: string
+          order_id?: string | null
+          points_earned?: number
+          restaurant_id?: string
+          transaction_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loyalty_transactions_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       open_tabs: {
         Row: {
           created_at: string | null
@@ -763,7 +858,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "restaurant_owner"
+      app_role: "admin" | "restaurant_owner" | "waiter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -891,7 +986,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "restaurant_owner"],
+      app_role: ["admin", "restaurant_owner", "waiter"],
     },
   },
 } as const
