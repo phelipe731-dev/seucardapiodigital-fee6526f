@@ -101,6 +101,11 @@ export default function ReservationsManager() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!restaurantId) {
+      toast.error("ID do restaurante não encontrado");
+      return;
+    }
+
     try {
       const reservationData = {
         restaurant_id: restaurantId,
@@ -190,7 +195,7 @@ export default function ReservationsManager() {
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
-            <Button>
+            <Button disabled={!restaurantId}>
               <Plus className="mr-2 h-4 w-4" />
               Nova Reserva
             </Button>

@@ -110,6 +110,18 @@ export default function TableReservation() {
       setConfirmationCode(data.confirmation_code || "");
       setSuccess(true);
       toast.success("Reserva solicitada com sucesso!");
+
+      // Enviar notificação WhatsApp (não bloqueia o fluxo se falhar)
+      try {
+        await supabase.functions.invoke('send-reservation-notification', {
+          body: {
+            reservationId: data.id,
+            restaurantId: restaurantId
+          }
+        });
+      } catch (notificationError) {
+        console.error('Failed to send notification:', notificationError);
+      }
     } catch (error: any) {
       toast.error("Erro ao criar reserva: " + error.message);
     } finally {
