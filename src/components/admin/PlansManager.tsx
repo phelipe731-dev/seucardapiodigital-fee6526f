@@ -5,6 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { SubscriptionPaymentCheckout } from "@/components/payment/SubscriptionPaymentCheckout";
+import { Tables } from "@/integrations/supabase/types";
 
 interface Plan {
   id: string;
@@ -29,7 +32,9 @@ export default function PlansManager() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
-  const [processingPlan, setProcessingPlan] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
+  const [restaurantId, setRestaurantId] = useState<string | null>(null);
 
   useEffect(() => {
     loadPlansAndSubscription();
@@ -40,6 +45,17 @@ export default function PlansManager() {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      // Get restaurant ID
+      const { data: restaurant } = await supabase
+        .from("restaurants")
+        .select("id")
+        .eq("owner_id", user.id)
+        .single();
+      
+      if (restaurant) {
+        setRestaurantId(restaurant.id);
+      }
 
       const { data: plansData, error: plansError } = await supabase
         .from("subscription_plans")
@@ -75,8 +91,19 @@ export default function PlansManager() {
     }
   };
 
-  const handleSubscribe = async (planId: string) => {
-    setProcessingPlan(planId);
+  const handleSubscribe = (plan: Plan) => {
+    // For free plans (price = 0), activate directly
+    if (plan.price === 0) {
+      activateFreePlan(plan);
+      return;
+    }
+
+    // For paid plans, show payment dialog
+    setSelectedPlan(plan);
+    setShowPaymentDialog(true);
+  };
+
+  const activateFreePlan = async (plan: Plan) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -84,10 +111,6 @@ export default function PlansManager() {
         return;
       }
 
-      const plan = plans.find(p => p.id === planId);
-      if (!plan) return;
-
-      // Calculate end date
       const startDate = new Date();
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + plan.duration_days);
@@ -105,7 +128,7 @@ export default function PlansManager() {
         .from("user_subscriptions")
         .insert({
           user_id: user.id,
-          plan_id: planId,
+          plan_id: plan.id,
           start_date: startDate.toISOString(),
           end_date: endDate.toISOString(),
           is_active: true,
@@ -113,14 +136,19 @@ export default function PlansManager() {
 
       if (error) throw error;
 
-      toast.success("Plano ativado com sucesso!");
+      toast.success("Plano gratuito ativado com sucesso!");
       loadPlansAndSubscription();
     } catch (error) {
-      console.error("Error subscribing:", error);
-      toast.error("Erro ao assinar plano");
-    } finally {
-      setProcessingPlan(null);
+      console.error("Error activating free plan:", error);
+      toast.error("Erro ao ativar plano");
     }
+  };
+
+  const handlePaymentSuccess = async () => {
+    setShowPaymentDialog(false);
+    setSelectedPlan(null);
+    toast.success("Pagamento realizado! Plano ativado.");
+    loadPlansAndSubscription();
   };
 
   if (loading) {
@@ -133,6 +161,12 @@ export default function PlansManager() {
 
   const isCurrentPlan = (planId: string) => {
     return currentSubscription?.plan_id === planId;
+  };
+
+  const getButtonText = (plan: Plan) => {
+    if (isCurrentPlan(plan.id)) return "Plano Atual";
+    if (plan.price === 0) return "Ativar Plano Gratuito";
+    return "Assinar Plano";
   };
 
   return (
@@ -192,8 +226,14 @@ export default function PlansManager() {
             <CardContent className="space-y-4">
               <div>
                 <p className="text-3xl font-bold">
-                  R$ {plan.price.toFixed(2)}
-                  <span className="text-sm font-normal text-muted-foreground">/mês</span>
+                  {plan.price === 0 ? (
+                    "Grátis"
+                  ) : (
+                    <>
+                      R$ {plan.price.toFixed(2)}
+                      <span className="text-sm font-normal text-muted-foreground">/mês</span>
+                    </>
+                  )}
                 </p>
               </div>
               <div className="space-y-2 text-sm">
@@ -214,16 +254,10 @@ export default function PlansManager() {
               <Button
                 variant={isCurrentPlan(plan.id) ? "outline" : "default"}
                 className="w-full"
-                onClick={() => handleSubscribe(plan.id)}
-                disabled={isCurrentPlan(plan.id) || processingPlan === plan.id}
+                onClick={() => handleSubscribe(plan)}
+                disabled={isCurrentPlan(plan.id)}
               >
-                {processingPlan === plan.id ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isCurrentPlan(plan.id) ? (
-                  "Plano Atual"
-                ) : (
-                  "Assinar Plano"
-                )}
+                {getButtonText(plan)}
               </Button>
             </CardContent>
           </Card>
@@ -241,6 +275,22 @@ export default function PlansManager() {
           </CardContent>
         </Card>
       )}
+
+      {/* Payment Dialog */}
+      <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Pagamento do Plano</DialogTitle>
+          </DialogHeader>
+          {selectedPlan && restaurantId && (
+            <SubscriptionPaymentCheckout
+              restaurantId={restaurantId}
+              plan={selectedPlan as Tables<'subscription_plans'>}
+              onPaymentSuccess={handlePaymentSuccess}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

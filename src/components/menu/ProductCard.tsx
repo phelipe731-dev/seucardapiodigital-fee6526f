@@ -23,56 +23,60 @@ export function ProductCard({ product, onAdd, disabled }: ProductCardProps) {
   return (
     <div 
       className={cn(
-        "flex gap-3 p-3 border-b last:border-b-0 transition-colors",
+        "flex gap-2 p-2 border-b last:border-b-0 transition-colors",
         isUnavailable ? "opacity-60" : "hover:bg-muted/50"
       )}
     >
-      {/* Product Info */}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-foreground text-sm leading-tight mb-1 line-clamp-2">
-          {product.name}
-        </h3>
-        {product.description && (
-          <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-            {product.description}
-          </p>
-        )}
-        <span className="text-sm font-semibold text-primary">
-          R$ {product.price.toFixed(2).replace('.', ',')}
-        </span>
-      </div>
-      
-      {/* Product Image & Add Button */}
+      {/* Product Image */}
       <div className="relative flex-shrink-0">
         {product.image_url ? (
           <div className="relative">
             <img
               src={product.image_url}
               alt={product.name}
-              className="w-24 h-24 rounded-lg object-cover"
+              className="w-16 h-16 rounded-md object-cover"
             />
             {isUnavailable && (
-              <div className="absolute inset-0 bg-background/80 rounded-lg flex items-center justify-center">
-                <span className="text-xs font-medium text-muted-foreground">Esgotado</span>
+              <div className="absolute inset-0 bg-background/80 rounded-md flex items-center justify-center">
+                <span className="text-[10px] font-medium text-muted-foreground">Esgotado</span>
               </div>
             )}
           </div>
         ) : (
-          <div className="w-24 h-24 rounded-lg bg-muted flex items-center justify-center">
-            <span className="text-3xl">🍽️</span>
+          <div className="w-16 h-16 rounded-md bg-muted flex items-center justify-center">
+            <span className="text-xl">🍽️</span>
           </div>
         )}
-        
-        {!isUnavailable && (
-          <Button
-            size="icon"
-            onClick={() => onAdd(product)}
-            disabled={disabled || isUnavailable}
-            className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full shadow-lg"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
-        )}
+      </div>
+
+      {/* Product Info */}
+      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+        <div>
+          <h3 className="font-medium text-foreground text-xs leading-tight line-clamp-1">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p className="text-[10px] text-muted-foreground line-clamp-1 mt-0.5">
+              {product.description}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-xs font-semibold text-primary">
+            R$ {product.price.toFixed(2).replace('.', ',')}
+          </span>
+          {!isUnavailable && (
+            <Button
+              size="sm"
+              onClick={() => onAdd(product)}
+              disabled={disabled || isUnavailable}
+              className="h-6 px-2 text-[10px] rounded-md"
+            >
+              <Plus className="h-3 w-3 mr-1" />
+              Adicionar
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
