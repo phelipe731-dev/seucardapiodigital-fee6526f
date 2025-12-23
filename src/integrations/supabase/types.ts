@@ -1129,7 +1129,10 @@ export type Database = {
           accepts_orders_override: boolean | null
           address: string | null
           closing_time: string | null
+          cover_url: string | null
           created_at: string | null
+          delivery_time_max: number | null
+          delivery_time_min: number | null
           description: string | null
           id: string
           is_active: boolean | null
@@ -1137,6 +1140,7 @@ export type Database = {
           name: string
           opening_time: string | null
           owner_id: string
+          payment_methods: string[] | null
           phone: string
           prep_time_max: number | null
           prep_time_min: number | null
@@ -1155,7 +1159,10 @@ export type Database = {
           accepts_orders_override?: boolean | null
           address?: string | null
           closing_time?: string | null
+          cover_url?: string | null
           created_at?: string | null
+          delivery_time_max?: number | null
+          delivery_time_min?: number | null
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -1163,6 +1170,7 @@ export type Database = {
           name: string
           opening_time?: string | null
           owner_id: string
+          payment_methods?: string[] | null
           phone: string
           prep_time_max?: number | null
           prep_time_min?: number | null
@@ -1181,7 +1189,10 @@ export type Database = {
           accepts_orders_override?: boolean | null
           address?: string | null
           closing_time?: string | null
+          cover_url?: string | null
           created_at?: string | null
+          delivery_time_max?: number | null
+          delivery_time_min?: number | null
           description?: string | null
           id?: string
           is_active?: boolean | null
@@ -1189,6 +1200,7 @@ export type Database = {
           name?: string
           opening_time?: string | null
           owner_id?: string
+          payment_methods?: string[] | null
           phone?: string
           prep_time_max?: number | null
           prep_time_min?: number | null

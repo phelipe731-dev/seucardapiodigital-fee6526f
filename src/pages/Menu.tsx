@@ -1,49 +1,58 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ShoppingCart, Phone, MapPin, Clock, Search, Home, Plus, Sparkles, History, Calendar, Star } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/contexts/CartContext";
-import { CartSheet } from "@/components/CartSheet";
 import { toast } from "sonner";
 import type { SelectedOption } from "@/contexts/CartContext";
+
+import { RestaurantHeader } from "@/components/menu/RestaurantHeader";
+import { DeliveryOptions, OrderType } from "@/components/menu/DeliveryOptions";
+import { CategoryNav } from "@/components/menu/CategoryNav";
+import { CategorySection } from "@/components/menu/ProductCard";
+import { DailyDealsSection } from "@/components/menu/DailyDealsSection";
+import { FloatingCartButton } from "@/components/menu/FloatingCartButton";
 
 interface Restaurant {
   id: string;
   name: string;
-  description: string;
-  logo_url: string;
+  description: string | null;
+  logo_url: string | null;
+  cover_url: string | null;
   phone: string;
   whatsapp: string;
-  address: string;
-  opening_time: string;
-  closing_time: string;
-  accepts_delivery: boolean;
-  working_days: string[];
+  address: string | null;
+  opening_time: string | null;
+  closing_time: string | null;
+  accepts_delivery: boolean | null;
+  working_days: string[] | null;
   accepts_orders_override: boolean | null;
+  delivery_time_min: number | null;
+  delivery_time_max: number | null;
+  payment_methods: string[] | null;
 }
 
 interface Category {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   display_order: number;
 }
 
 interface Product {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   price: number;
-  image_url: string;
+  image_url: string | null;
   is_available: boolean;
   category_id: string;
+  is_daily_deal: boolean | null;
 }
 
 interface OptionItem {
@@ -66,34 +75,67 @@ export default function Menu() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tableNumber = searchParams.get("mesa");
-  const enableTableQr = import.meta.env.VITE_RESTAURANT_ENABLE_TABLE_QR === 'true';
+  
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [dailyDeals, setDailyDeals] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  
+  const [orderType, setOrderType] = useState<OrderType>('delivery');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  
   const [optionsDialogOpen, setOptionsDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string[]>>({});
   const [loadingOptions, setLoadingOptions] = useState(false);
-  const { addItem, items } = useCart();
+  
+  const { addItem, items, subtotal } = useCart();
+  const categoryRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   useEffect(() => {
     loadMenu();
   }, [restaurantId]);
 
-  const isRestaurantOpen = () => {
+  // Initialize expanded categories after loading
+  useEffect(() => {
+    if (categories.length > 0 && expandedCategories.size === 0) {
+      setExpandedCategories(new Set(categories.map(c => c.id)));
+      setActiveCategory(categories[0]?.id || null);
+    }
+  }, [categories]);
+
+  // Scroll spy for category navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 100;
+      
+      for (const category of categories) {
+        const element = document.getElementById(`category-${category.id}`);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveCategory(category.id);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [categories]);
+
+  const isRestaurantOpen = useCallback(() => {
     if (!restaurant) return false;
     
-    // Check manual override first
     if (restaurant.accepts_orders_override !== null) {
       return restaurant.accepts_orders_override;
     }
     
-    // Check if today is a working day
     const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const today = daysOfWeek[new Date().getDay()];
     
@@ -101,7 +143,6 @@ export default function Menu() {
       return false;
     }
     
-    // Check time
     if (!restaurant.opening_time || !restaurant.closing_time) return true;
     
     const now = new Date();
@@ -114,7 +155,7 @@ export default function Menu() {
     const closingMinutes = closeHour * 60 + closeMin;
     
     return currentTime >= openingMinutes && currentTime <= closingMinutes;
-  };
+  }, [restaurant]);
 
   const loadMenu = async () => {
     try {
@@ -126,7 +167,7 @@ export default function Menu() {
         .single();
 
       if (restaurantError) throw restaurantError;
-      setRestaurant(restaurantData);
+      setRestaurant(restaurantData as Restaurant);
 
       const { data: categoriesData, error: categoriesError } = await supabase
         .from("categories")
@@ -146,8 +187,7 @@ export default function Menu() {
 
       if (productsError) throw productsError;
       
-      // Separar produtos em destaque e normais
-      const allProducts = productsData || [];
+      const allProducts = (productsData || []) as Product[];
       const dealsProducts = allProducts.filter(p => p.is_daily_deal);
       const regularProducts = allProducts.filter(p => !p.is_daily_deal);
       
@@ -161,6 +201,30 @@ export default function Menu() {
     }
   };
 
+  const handleCategoryClick = (categoryId: string) => {
+    setActiveCategory(categoryId);
+    const element = document.getElementById(`category-${categoryId}`);
+    if (element) {
+      const offset = 56; // Height of sticky nav
+      const top = element.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+    // Ensure category is expanded
+    setExpandedCategories(prev => new Set([...prev, categoryId]));
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
+  };
+
   const handleAddToCart = async (product: Product) => {
     if (!isRestaurantOpen()) {
       toast.error("Restaurante fechado no momento");
@@ -171,7 +235,6 @@ export default function Menu() {
       return;
     }
 
-    // Load product options
     setLoadingOptions(true);
     setSelectedProduct(product);
     
@@ -181,9 +244,7 @@ export default function Menu() {
       .eq("product_id", product.id)
       .order("display_order");
 
-    if (optionsError) {
-      console.error(optionsError);
-      // If no options, add directly to cart
+    if (optionsError || !optionsData || optionsData.length === 0) {
       addItem({
         id: product.id,
         name: product.name,
@@ -192,23 +253,10 @@ export default function Menu() {
       });
       toast.success(`${product.name} adicionado ao carrinho!`);
       setLoadingOptions(false);
+      setSelectedProduct(null);
       return;
     }
 
-    if (!optionsData || optionsData.length === 0) {
-      // If no options, add directly to cart
-      addItem({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image_url: product.image_url,
-      });
-      toast.success(`${product.name} adicionado ao carrinho!`);
-      setLoadingOptions(false);
-      return;
-    }
-
-    // Load option items
     const optionsWithItems = await Promise.all(
       optionsData.map(async (option) => {
         const { data: items } = await supabase
@@ -235,7 +283,6 @@ export default function Menu() {
       if (!option) return prev;
       
       if (checked) {
-        // Check max selections
         if (current.length >= option.max_selections) {
           if (option.max_selections === 1) {
             return { ...prev, [optionId]: [itemId] };
@@ -253,7 +300,6 @@ export default function Menu() {
   const handleConfirmOptions = () => {
     if (!selectedProduct) return;
 
-    // Validate required options
     for (const option of productOptions) {
       const selected = selectedOptions[option.id] || [];
       
@@ -268,7 +314,6 @@ export default function Menu() {
       }
     }
 
-    // Build selected options data
     const optionsData: SelectedOption[] = Object.entries(selectedOptions)
       .filter(([_, items]) => items.length > 0)
       .map(([optionId, itemIds]) => {
@@ -302,17 +347,19 @@ export default function Menu() {
     setSelectedOptions({});
   };
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = searchTerm
+    ? products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : products;
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Carregando cardápio...</p>
+          <div className="animate-spin rounded-full h-10 w-10 border-2 border-primary border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-sm text-muted-foreground">Carregando cardápio...</p>
         </div>
       </div>
     );
@@ -320,421 +367,159 @@ export default function Menu() {
 
   if (!restaurant) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card>
-          <CardHeader>
-            <CardTitle>Restaurante não encontrado</CardTitle>
-            <CardDescription>
-              O cardápio que você está procurando não existe ou não está mais disponível.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🍽️</div>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Restaurante não encontrado</h2>
+          <p className="text-sm text-muted-foreground">
+            O cardápio que você procura não existe ou não está disponível.
+          </p>
+        </div>
       </div>
     );
   }
 
-  const getDayLabel = (day: string) => {
-    const dayMap: Record<string, string> = {
-      monday: "Seg", tuesday: "Ter", wednesday: "Qua",
-      thursday: "Qui", friday: "Sex", saturday: "Sáb", sunday: "Dom"
-    };
-    return dayMap[day] || day;
-  };
+  const isOpen = isRestaurantOpen();
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="bg-gradient-primary text-primary-foreground sticky top-0 z-40 shadow-elevated">
-        <div className="container mx-auto px-4 py-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4 flex-1">
-              {restaurant.logo_url && (
-                <div className="relative">
-                  <img
-                    src={restaurant.logo_url}
-                    alt={restaurant.name}
-                    className="w-16 h-16 rounded-2xl object-cover bg-white shadow-xl border-4 border-white/20"
-                  />
-                  <Sparkles className="absolute -top-1 -right-1 h-5 w-5 text-yellow-300 animate-pulse" />
-                </div>
-              )}
-              <div className="flex-1">
-                <h1 className="text-2xl md:text-3xl font-bold drop-shadow-lg flex items-center gap-2">
-                  {restaurant.name}
-                  {isRestaurantOpen() && <span className="text-xl">✨</span>}
-                </h1>
-                {restaurant.description && (
-                  <p className="text-sm opacity-90 mt-1 hidden md:block">{restaurant.description}</p>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => navigate("/historico")}
-                className="shadow-xl hover:scale-105 transition-transform bg-white/90"
-              >
-                <History className="mr-2 h-5 w-5" />
-                <span className="hidden sm:inline font-semibold">Meus Pedidos</span>
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => navigate(`/reservar/${restaurantId}`)}
-                className="shadow-xl hover:scale-105 transition-transform bg-white/90"
-              >
-                <Calendar className="mr-2 h-5 w-5" />
-                <span className="hidden sm:inline font-semibold">Reservar Mesa</span>
-              </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => navigate(`/checkout/${restaurantId}${tableNumber ? `?mesa=${tableNumber}` : ''}`)}
-                className="relative shadow-xl hover:scale-105 transition-transform"
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                <span className="hidden sm:inline font-semibold">Carrinho</span>
-                {items.length > 0 && (
-                  <Badge className="absolute -top-2 -right-2 bg-destructive h-7 w-7 flex items-center justify-center p-0 text-xs font-bold animate-pulse shadow-lg">
-                    {items.length}
-                  </Badge>
-                )}
-              </Button>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="🔍 Busque seu prato favorito..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 pr-4 h-12 bg-white/95 backdrop-blur-sm border-2 border-white/50 text-foreground placeholder:text-muted-foreground focus:border-white text-base font-medium shadow-lg"
-              />
-            </div>
-            
-            {/* Restaurant Info */}
-            <div className="flex flex-wrap gap-2 text-sm">
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-xl backdrop-blur-sm font-semibold shadow-lg ${
-                isRestaurantOpen() 
-                  ? 'bg-green-500/90 text-white animate-pulse' 
-                  : 'bg-red-500/90 text-white'
-              }`}>
-                <Clock size={16} />
-                <span>{isRestaurantOpen() ? "🟢 ABERTO" : "🔴 FECHADO"}</span>
-              </div>
-              
-              {restaurant.opening_time && restaurant.closing_time && (
-                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-medium shadow-lg">
-                  <span>⏰ {restaurant.opening_time} - {restaurant.closing_time}</span>
-                </div>
-              )}
-              
-              {restaurant.working_days && restaurant.working_days.length < 7 && (
-                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-medium shadow-lg">
-                  <span>📅 {restaurant.working_days.map(getDayLabel).join(", ")}</span>
-                </div>
-              )}
-              
-              {restaurant.phone && (
-                <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl backdrop-blur-sm font-medium shadow-lg">
-                  <Phone size={16} />
-                  <span>{restaurant.phone}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background pb-20">
+      {/* Restaurant Header with Cover, Logo, Status */}
+      <RestaurantHeader
+        restaurant={restaurant}
+        isOpen={isOpen}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
 
-      {/* Badge de Mesa (se vindo de QR Code) */}
-      {tableNumber && enableTableQr && (
-        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 border-b-2 border-primary/30 py-4">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center gap-3">
-              <Badge variant="secondary" className="text-base px-6 py-2 shadow-lg">
-                📍 Você está na Mesa {tableNumber}
-              </Badge>
-            </div>
-          </div>
+      {/* Table Badge */}
+      {tableNumber && (
+        <div className="px-4 py-2 bg-primary/10">
+          <Badge variant="secondary" className="w-full justify-center py-1">
+            📍 Mesa {tableNumber}
+          </Badge>
         </div>
       )}
 
-      {!isRestaurantOpen() && (
-        <div className="bg-gradient-to-r from-destructive/20 to-destructive/10 border-y-4 border-destructive/50 py-6 animate-fade-in-up">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-center gap-4 text-center">
-              <div className="text-5xl">😴</div>
-              <div>
-                <h3 className="text-xl font-bold text-destructive mb-1">Estamos Fechados Agora</h3>
-                <p className="text-sm text-muted-foreground font-medium">
-                  Voltamos {restaurant.opening_time}. Navegue pelo cardápio, mas pedidos só durante o horário de funcionamento!
-                </p>
-              </div>
-            </div>
-          </div>
+      {/* Closed Notice */}
+      {!isOpen && (
+        <div className="px-4 py-3 bg-destructive/10 border-y border-destructive/20">
+          <p className="text-sm text-center text-destructive font-medium">
+            😴 Estamos fechados. Pedidos indisponíveis.
+          </p>
         </div>
       )}
 
-      {/* Menu */}
-      <main className="container mx-auto px-4 py-8 pb-24">
-        {/* Promoções do Dia - Destaque Especial */}
-        {dailyDeals.length > 0 && !searchTerm && (
-          <section className="mb-12 animate-fade-in-up">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-1 shadow-2xl">
-              <div className="bg-background rounded-3xl p-6 sm:p-8">
-                <div className="flex items-center justify-center gap-3 mb-6">
-                  <div className="relative">
-                    <Star className="h-10 w-10 text-yellow-500 animate-pulse" fill="currentColor" />
-                    <Sparkles className="absolute -top-2 -right-2 h-6 w-6 text-orange-500 animate-bounce" />
-                  </div>
-                  <h2 className="text-4xl sm:text-5xl font-black bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
-                    PROMOÇÃO DO DIA!
-                  </h2>
-                  <div className="relative">
-                    <Star className="h-10 w-10 text-yellow-500 animate-pulse" fill="currentColor" />
-                    <Sparkles className="absolute -top-2 -left-2 h-6 w-6 text-orange-500 animate-bounce" />
-                  </div>
-                </div>
-                
-                <p className="text-center text-muted-foreground text-lg font-semibold mb-8 animate-pulse">
-                  🔥 Aproveite as ofertas especiais de hoje! 🔥
-                </p>
+      {/* Delivery Options */}
+      <DeliveryOptions
+        selected={orderType}
+        onSelect={setOrderType}
+        acceptsDelivery={restaurant.accepts_delivery || false}
+      />
 
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {dailyDeals.map((product, idx) => (
-                    <Card 
-                      key={product.id} 
-                      className="group relative overflow-hidden border-4 border-yellow-400 bg-gradient-to-br from-yellow-50 to-orange-50 hover:shadow-2xl hover:scale-105 transition-all duration-300 animate-fade-in-up"
-                      style={{ animationDelay: `${idx * 0.1}s` }}
-                    >
-                      {/* Badge de Destaque Animado */}
-                      <div className="absolute top-3 right-3 z-10">
-                        <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold text-xs shadow-xl animate-bounce">
-                          <Star className="h-3 w-3 mr-1" fill="currentColor" />
-                          DESTAQUE
-                        </Badge>
-                      </div>
+      {/* Category Navigation */}
+      <CategoryNav
+        categories={categories}
+        activeCategory={activeCategory}
+        onCategoryClick={handleCategoryClick}
+      />
 
-                      {product.image_url && (
-                        <div className="relative h-56 overflow-hidden">
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        </div>
-                      )}
+      {/* Daily Deals */}
+      {dailyDeals.length > 0 && !searchTerm && (
+        <DailyDealsSection
+          products={dailyDeals}
+          onAddProduct={handleAddToCart}
+          disabled={!isOpen}
+        />
+      )}
 
-                      <CardHeader className="relative pb-3">
-                        <CardTitle className="text-2xl font-bold text-foreground flex items-center gap-2">
-                          {product.name}
-                          <Sparkles className="h-5 w-5 text-yellow-500" />
-                        </CardTitle>
-                        {product.description && (
-                          <CardDescription className="text-base line-clamp-2 text-muted-foreground">
-                            {product.description}
-                          </CardDescription>
-                        )}
-                      </CardHeader>
+      {/* Search Results Info */}
+      {searchTerm && (
+        <div className="px-4 py-2">
+          <p className="text-sm text-muted-foreground">
+            {filteredProducts.length} resultado(s) para "{searchTerm}"
+          </p>
+        </div>
+      )}
 
-                      <CardContent className="space-y-4">
-                        <div className="flex items-baseline justify-between">
-                          <div className="flex flex-col">
-                            <span className="text-4xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                              R$ {product.price.toFixed(2)}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-semibold">
-                              💥 Oferta Especial
-                            </span>
-                          </div>
-                        </div>
-
-                        <Button
-                          onClick={() => handleAddToCart(product)}
-                          disabled={!isRestaurantOpen()}
-                          className="w-full h-12 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold text-lg shadow-xl group-hover:shadow-2xl transition-all"
-                        >
-                          <Plus className="mr-2 h-5 w-5" />
-                          Adicionar
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {searchTerm && (
-          <div className="mb-6 p-4 bg-primary/10 rounded-xl border-2 border-primary/30 animate-fade-in-up">
-            <p className="text-foreground font-semibold">
-              🔎 {filteredProducts.length} resultado(s) encontrado(s) para <span className="text-primary">"{searchTerm}"</span>
-            </p>
-          </div>
-        )}
-        
-        {categories.map((category, idx) => {
-          const categoryProducts = (searchTerm ? filteredProducts : products).filter(
-            (p) => p.category_id === category.id
-          );
-
-          if (categoryProducts.length === 0) return null;
-
+      {/* Product Categories */}
+      <div className="divide-y">
+        {categories.map((category) => {
+          const categoryProducts = filteredProducts.filter(p => p.category_id === category.id);
           return (
-            <section key={category.id} className="mb-16 animate-fade-in-up" style={{ animationDelay: `${idx * 0.1}s` }}>
-              <div className="mb-8 relative">
-                <div className="flex items-center gap-4">
-                  <div className="h-2 w-16 bg-gradient-primary rounded-full shadow-lg"></div>
-                  <h2 className="text-4xl font-bold bg-gradient-primary bg-clip-text text-transparent flex items-center gap-2">
-                    {category.name}
-                    <Sparkles className="h-6 w-6 text-primary" />
-                  </h2>
-                  <div className="h-2 flex-1 bg-gradient-primary rounded-full opacity-20"></div>
-                </div>
-                {category.description && (
-                  <p className="text-muted-foreground mt-3 ml-20 text-base font-medium">
-                    {category.description}
-                  </p>
-                )}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {categoryProducts.map((product, pIdx) => (
-                  <Card
-                    key={product.id}
-                    className={`group overflow-hidden transition-all duration-300 hover:-translate-y-3 cursor-pointer border-2 bg-card/95 backdrop-blur animate-fade-in-up ${
-                      !product.is_available 
-                        ? "opacity-60 hover:border-muted" 
-                        : "hover:shadow-elevated hover:border-primary/50"
-                    }`}
-                    style={{ animationDelay: `${pIdx * 0.05}s` }}
-                    onClick={() => !isRestaurantOpen() && toast.error("Restaurante fechado no momento 😔")}
-                  >
-                    {product.image_url && (
-                      <div className="relative h-64 overflow-hidden bg-muted">
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        {!product.is_available && (
-                          <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                            <Badge variant="secondary" className="text-base px-6 py-2 shadow-xl font-bold">
-                              😔 Esgotado
-                            </Badge>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-2xl group-hover:text-primary transition-colors line-clamp-2">
-                        {product.name}
-                      </CardTitle>
-                      {product.description && (
-                        <CardDescription className="text-base line-clamp-3 mt-2">
-                          {product.description}
-                        </CardDescription>
-                      )}
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-col">
-                          <span className="text-3xl font-bold bg-gradient-primary bg-clip-text text-transparent">
-                            R$ {product.price.toFixed(2)}
-                          </span>
-                        </div>
-                        <Button
-                          variant="gradient"
-                          size="lg"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddToCart(product);
-                          }}
-                          disabled={!product.is_available || !isRestaurantOpen()}
-                          className="group-hover:scale-110 transition-transform shadow-xl font-semibold"
-                        >
-                          <Plus className="h-5 w-5 mr-2" />
-                          Adicionar
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </section>
+            <CategorySection
+              key={category.id}
+              category={category}
+              products={categoryProducts}
+              onAddProduct={handleAddToCart}
+              isExpanded={expandedCategories.has(category.id)}
+              onToggle={() => toggleCategory(category.id)}
+              disabled={!isOpen}
+            />
           );
         })}
+      </div>
 
-        {categories.length === 0 && !loading && (
-          <div className="text-center py-20 animate-fade-in-up">
-            <div className="text-8xl mb-6">👨‍🍳</div>
-            <h3 className="text-3xl font-bold text-foreground mb-3">Cardápio em Construção</h3>
-            <p className="text-muted-foreground text-lg">
-              Nossos chefs estão preparando delícias incríveis! Volte em breve 🍽️
-            </p>
-          </div>
-        )}
-        
-        {searchTerm && filteredProducts.length === 0 && (
-          <div className="text-center py-20 animate-fade-in-up">
-            <div className="text-8xl mb-6">🔍</div>
-            <h3 className="text-3xl font-bold text-foreground mb-3">Nada Encontrado</h3>
-            <p className="text-muted-foreground text-lg">
-              Tente buscar com outros termos ou explore nosso cardápio completo
-            </p>
-          </div>
-        )}
-      </main>
+      {/* Empty States */}
+      {categories.length === 0 && !loading && (
+        <div className="text-center py-16 px-4">
+          <div className="text-5xl mb-4">👨‍🍳</div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">Cardápio em construção</h3>
+          <p className="text-sm text-muted-foreground">Volte em breve!</p>
+        </div>
+      )}
+      
+      {searchTerm && filteredProducts.length === 0 && (
+        <div className="text-center py-16 px-4">
+          <div className="text-5xl mb-4">🔍</div>
+          <h3 className="text-lg font-semibold text-foreground mb-2">Nada encontrado</h3>
+          <p className="text-sm text-muted-foreground">Tente outros termos de busca</p>
+        </div>
+      )}
 
-      <CartSheet
-        open={cartOpen}
-        onOpenChange={setCartOpen}
-        restaurant={restaurant}
+      {/* Floating Cart Button */}
+      <FloatingCartButton
+        itemCount={items.length}
+        total={subtotal}
+        onClick={() => navigate(`/checkout/${restaurantId}${tableNumber ? `?mesa=${tableNumber}` : ''}`)}
       />
 
       {/* Options Dialog */}
       <Dialog open={optionsDialogOpen} onOpenChange={setOptionsDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl">
-              {selectedProduct?.name}
-            </DialogTitle>
+            <DialogTitle>{selectedProduct?.name}</DialogTitle>
           </DialogHeader>
           
           {loadingOptions ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Carregando opções...</p>
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent mx-auto"></div>
+              <p className="mt-3 text-sm text-muted-foreground">Carregando opções...</p>
             </div>
           ) : (
-            <div className="space-y-6 pt-4">
+            <div className="space-y-4 pt-2">
               {productOptions.map((option) => (
                 <Card key={option.id}>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center justify-between">
+                  <CardHeader className="py-3 px-4">
+                    <CardTitle className="text-sm flex items-center justify-between">
                       <span>
                         {option.name}
                         {option.is_required && (
-                          <span className="ml-2 text-sm text-destructive font-normal">*obrigatório</span>
+                          <span className="ml-2 text-xs text-destructive">*</span>
                         )}
                       </span>
-                      <span className="text-sm text-muted-foreground font-normal">
-                        {option.max_selections === 1 ? "Escolha 1" : `Escolha até ${option.max_selections}`}
+                      <span className="text-xs text-muted-foreground font-normal">
+                        {option.max_selections === 1 ? "Escolha 1" : `Até ${option.max_selections}`}
                       </span>
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="py-2 px-4 space-y-2">
                     {option.items.map((item) => {
                       const isSelected = (selectedOptions[option.id] || []).includes(item.id);
                       return (
-                        <div key={item.id} className="flex items-center space-x-3 p-3 border rounded-lg hover:bg-accent transition-colors">
+                        <div 
+                          key={item.id} 
+                          className="flex items-center space-x-3 p-2 border rounded-lg hover:bg-muted/50 transition-colors"
+                        >
                           <Checkbox
                             id={item.id}
                             checked={isSelected}
@@ -744,12 +529,12 @@ export default function Menu() {
                           />
                           <Label
                             htmlFor={item.id}
-                            className="flex-1 cursor-pointer flex items-center justify-between"
+                            className="flex-1 cursor-pointer flex items-center justify-between text-sm"
                           >
-                            <span className="font-medium">{item.name}</span>
+                            <span>{item.name}</span>
                             {item.price > 0 && (
-                              <span className="text-sm text-primary font-semibold">
-                                + R$ {item.price.toFixed(2)}
+                              <span className="text-primary font-medium">
+                                +R$ {item.price.toFixed(2).replace('.', ',')}
                               </span>
                             )}
                           </Label>
@@ -760,7 +545,7 @@ export default function Menu() {
                 </Card>
               ))}
               
-              <div className="flex gap-3 pt-4">
+              <div className="flex gap-2 pt-2">
                 <Button
                   variant="outline"
                   className="flex-1"
@@ -769,11 +554,10 @@ export default function Menu() {
                   Cancelar
                 </Button>
                 <Button
-                  variant="gradient"
                   className="flex-1"
                   onClick={handleConfirmOptions}
                 >
-                  Adicionar ao Carrinho
+                  Adicionar
                 </Button>
               </div>
             </div>
