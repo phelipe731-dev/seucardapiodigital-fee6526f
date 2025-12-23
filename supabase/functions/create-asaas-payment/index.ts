@@ -26,8 +26,8 @@ interface CreatePaymentRequest {
   };
 }
 
-// Use sandbox for testing, production for live: https://api.asaas.com
-const ASAAS_BASE_URL = Deno.env.get('ASAAS_BASE_URL') ?? 'https://sandbox.asaas.com';
+// Production: https://api.asaas.com | Sandbox: https://sandbox.asaas.com
+const ASAAS_BASE_URL = Deno.env.get('ASAAS_BASE_URL') ?? 'https://api.asaas.com';
 const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY');
 
 if (!ASAAS_API_KEY) {
