@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CreditCard, Smartphone, FileText, QrCode, Loader2, CheckCircle2 } from "lucide-react";
@@ -14,18 +15,59 @@ interface SubscriptionPaymentCheckoutProps {
   onPaymentSuccess: () => void;
 }
 
+// Função para formatar CPF/CNPJ
+const formatCpfCnpj = (value: string) => {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length <= 11) {
+    // CPF: 000.000.000-00
+    return digits
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+  } else {
+    // CNPJ: 00.000.000/0000-00
+    return digits
+      .replace(/(\d{2})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1/$2')
+      .replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+  }
+};
+
 export const SubscriptionPaymentCheckout = ({
   restaurantId,
   plan,
   onPaymentSuccess,
 }: SubscriptionPaymentCheckoutProps) => {
   const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'BOLETO'>('PIX');
+  const [cpfCnpj, setCpfCnpj] = useState('');
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [pixData, setPixData] = useState<{ qrCode: string; copyPaste: string } | null>(null);
   const [boletoUrl, setBoletoUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handlePayment = async () => {
+    const cleanCpfCnpj = cpfCnpj.replace(/\D/g, '');
+    
+    if (!cleanCpfCnpj || (cleanCpfCnpj.length !== 11 && cleanCpfCnpj.length !== 14)) {
+      toast({
+        title: "CPF/CNPJ inválido",
+        description: "Informe um CPF (11 dígitos) ou CNPJ (14 dígitos) válido",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!email || !email.includes('@')) {
+      toast({
+        title: "E-mail inválido",
+        description: "Informe um e-mail válido",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: restaurant } = await supabase
@@ -45,6 +87,8 @@ export const SubscriptionPaymentCheckout = ({
           paymentMethod,
           customerName: restaurant.name,
           customerPhone: restaurant.phone,
+          customerCpfCnpj: cleanCpfCnpj,
+          customerEmail: email,
         },
       });
 
@@ -166,6 +210,32 @@ export const SubscriptionPaymentCheckout = ({
       </div>
 
       <div className="space-y-6">
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="cpfCnpj" className="text-sm font-medium">CPF ou CNPJ *</Label>
+            <Input
+              id="cpfCnpj"
+              type="text"
+              placeholder="000.000.000-00"
+              value={cpfCnpj}
+              onChange={(e) => setCpfCnpj(formatCpfCnpj(e.target.value))}
+              maxLength={18}
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="email" className="text-sm font-medium">E-mail *</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+        </div>
+
         <div>
           <Label className="text-base font-semibold mb-4 block">Forma de Pagamento</Label>
           <RadioGroup value={paymentMethod} onValueChange={(value: any) => setPaymentMethod(value)}>
