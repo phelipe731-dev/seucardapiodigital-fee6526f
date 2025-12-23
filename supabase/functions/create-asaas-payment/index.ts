@@ -26,12 +26,63 @@ interface CreatePaymentRequest {
   };
 }
 
-// Production: https://api.asaas.com | Sandbox: https://sandbox.asaas.com
-const ASAAS_BASE_URL = Deno.env.get('ASAAS_BASE_URL') ?? 'https://api.asaas.com';
 const ASAAS_API_KEY = Deno.env.get('ASAAS_API_KEY');
+
+// Auto-detect environment from token (prod vs sandbox). Can be overridden via ASAAS_BASE_URL.
+const inferredOrigin =
+  ASAAS_API_KEY && ASAAS_API_KEY.includes('_prod_')
+    ? 'https://api.asaas.com'
+    : 'https://sandbox.asaas.com';
+
+const ASAAS_ORIGIN = Deno.env.get('ASAAS_BASE_URL') ?? inferredOrigin;
+
+// Production uses /v3; sandbox commonly uses /api/v3
+const ASAAS_API_PREFIX = ASAAS_ORIGIN.includes('sandbox.asaas.com') ? '/api/v3' : '/v3';
 
 if (!ASAAS_API_KEY) {
   console.error('ASAAS_API_KEY not configured in environment');
+}
+
+type AsaasRequestResult<T> = {
+  status: number;
+  data: T;
+  raw: string;
+};
+
+async function asaasRequest<T>(path: string, options: RequestInit = {}): Promise<AsaasRequestResult<T>> {
+  const origin = ASAAS_ORIGIN.replace(/\/$/, '');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  const url = `${origin}${ASAAS_API_PREFIX}${normalizedPath}`;
+
+  const res = await fetch(url, {
+    ...options,
+    headers: {
+      access_token: ASAAS_API_KEY!,
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+    },
+  });
+
+  const raw = await res.text();
+  let json: any = null;
+  try {
+    json = raw ? JSON.parse(raw) : null;
+  } catch {
+    json = { raw };
+  }
+
+  if (!res.ok) {
+    console.error('Asaas API error response:', { url, status: res.status, body: json });
+    const message =
+      json?.errors
+        ? JSON.stringify(json.errors)
+        : typeof json?.raw === 'string'
+          ? json.raw
+          : raw;
+    throw new Error(`Asaas API error (${res.status}): ${message}`);
+  }
+
+  return { status: res.status, data: json as T, raw };
 }
 
 serve(async (req) => {
@@ -52,72 +103,77 @@ serve(async (req) => {
     const requestData: CreatePaymentRequest = await req.json();
 
     // Basic validation
-    if (!requestData || !requestData.type || !requestData.amount || !requestData.paymentMethod) {
+    if (!requestData?.type || !requestData?.amount || !requestData?.paymentMethod || !requestData?.customerName) {
       return new Response(JSON.stringify({ error: 'Invalid request payload' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    console.log('Creating ASAAS payment:', {
+    if (requestData.type === 'order' && !requestData.orderId) {
+      return new Response(JSON.stringify({ error: 'orderId is required for order payments' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (requestData.type === 'subscription' && (!requestData.restaurantId || !requestData.subscriptionPlanId)) {
+      return new Response(
+        JSON.stringify({ error: 'restaurantId and subscriptionPlanId are required for subscription payments' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log('Creating Asaas payment:', {
       type: requestData.type,
       amount: requestData.amount,
       paymentMethod: requestData.paymentMethod,
+      origin: ASAAS_ORIGIN,
+      prefix: ASAAS_API_PREFIX,
     });
 
-    // Helper for requests to Asaas
-    async function asaasFetch(path: string, options: RequestInit = {}) {
-      const url = `${ASAAS_BASE_URL.replace(/\/$/, '')}${path}`;
-      const headers = {
-        'access_token': ASAAS_API_KEY!,
-        'Content-Type': 'application/json',
-        ...(options.headers || {}),
-      };
-      return fetch(url, { ...options, headers });
-    }
-
-    // Criar ou buscar cliente no ASAAS
+    // Criar ou buscar cliente no Asaas
     let customerId: string | undefined;
+
+    const findCustomerId = async (query: string) => {
+      const { data } = await asaasRequest<{ data: Array<{ id: string }> }>(`/customers${query}`, {
+        method: 'GET',
+      });
+      return data?.data?.[0]?.id;
+    };
+
+    const createCustomerId = async (payload: Record<string, unknown>) => {
+      const { data } = await asaasRequest<{ id: string }>('/customers', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      return data?.id;
+    };
 
     // Tentar buscar cliente existente por CPF/CNPJ
     if (requestData.customerCpfCnpj) {
-      const searchResponse = await asaasFetch(`/api/v3/customers?cpfCnpj=${encodeURIComponent(requestData.customerCpfCnpj)}`, {
-        method: 'GET',
-      });
-
-      const searchData = await searchResponse.json();
-      if (searchResponse.ok && searchData.data && searchData.data.length > 0) {
-        customerId = searchData.data[0].id;
+      customerId = await findCustomerId(`?cpfCnpj=${encodeURIComponent(requestData.customerCpfCnpj)}`);
+      if (customerId) {
         console.log('Customer found by cpf/cnpj:', customerId);
-      } else {
-        // Criar novo cliente com cpf/cnpj
-        const customerResponse = await asaasFetch('/api/v3/customers', {
-          method: 'POST',
-          body: JSON.stringify({
-            name: requestData.customerName,
-            cpfCnpj: requestData.customerCpfCnpj,
-            email: requestData.customerEmail,
-            mobilePhone: requestData.customerPhone,
-          }),
-        });
+      }
 
-        const customerData = await customerResponse.json();
-        if (!customerResponse.ok) {
-          console.error('Error creating customer (with cpf):', customerData);
-          throw new Error(`Failed to create customer: ${JSON.stringify(customerData.errors || customerData)}`);
-        }
-        customerId = customerData.id;
+      if (!customerId) {
+        customerId = await createCustomerId({
+          name: requestData.customerName,
+          cpfCnpj: requestData.customerCpfCnpj,
+          email: requestData.customerEmail,
+          mobilePhone: requestData.customerPhone,
+        });
         console.log('Customer created (with cpf):', customerId);
       }
     } else if (requestData.customerEmail) {
       // Tentar buscar por email (fallback)
       try {
-        const searchResponse = await asaasFetch(`/api/v3/customers?email=${encodeURIComponent(requestData.customerEmail)}`, {
-          method: 'GET',
-        });
-        const searchData = await searchResponse.json();
-        if (searchResponse.ok && searchData.data && searchData.data.length > 0) {
-          customerId = searchData.data[0].id;
+        customerId = await findCustomerId(`?email=${encodeURIComponent(requestData.customerEmail)}`);
+        if (customerId) {
           console.log('Customer found by email:', customerId);
         }
       } catch (err) {
@@ -127,22 +183,16 @@ serve(async (req) => {
 
     // Se ainda não temos customerId, criar sem cpf/cnpj
     if (!customerId) {
-      const customerResponse = await asaasFetch('/api/v3/customers', {
-        method: 'POST',
-        body: JSON.stringify({
-          name: requestData.customerName,
-          email: requestData.customerEmail,
-          mobilePhone: requestData.customerPhone,
-        }),
+      customerId = await createCustomerId({
+        name: requestData.customerName,
+        email: requestData.customerEmail,
+        mobilePhone: requestData.customerPhone,
       });
-
-      const customerData = await customerResponse.json();
-      if (!customerResponse.ok) {
-        console.error('Error creating customer (no cpf):', customerData);
-        throw new Error(`Failed to create customer: ${JSON.stringify(customerData.errors || customerData)}`);
-      }
-      customerId = customerData.id;
       console.log('Customer created (no cpf):', customerId);
+    }
+
+    if (!customerId) {
+      throw new Error('Failed to resolve Asaas customer id');
     }
 
     // Montar cobrança
@@ -150,8 +200,8 @@ serve(async (req) => {
     const dueDateStr = dueDate.toISOString().split('T')[0];
 
     // Map paymentMethod for Asaas expected billingType if needed
-    let billingType = requestData.paymentMethod; // keep original values; Asaas supports PIX, BOLETO, CREDIT_CARD
-    if (billingType === 'DEBIT_CARD') billingType = 'CREDIT_CARD'; // Asaas treats card payments as credit card in many flows
+    let billingType = requestData.paymentMethod;
+    if (billingType === 'DEBIT_CARD') billingType = 'CREDIT_CARD';
 
     const paymentBody: any = {
       customer: customerId,
@@ -186,29 +236,42 @@ serve(async (req) => {
     }
 
     // Criar pagamento
-    const paymentResponse = await asaasFetch('/api/v3/payments', {
+    const { data: paymentData } = await asaasRequest<any>('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentBody),
     });
 
-    const paymentData = await paymentResponse.json();
-    if (!paymentResponse.ok) {
-      console.error('Error creating payment:', paymentData);
-      throw new Error(`Failed to create payment: ${JSON.stringify(paymentData.errors || paymentData)}`);
+    if (!paymentData?.id) {
+      console.error('Payment response missing id:', paymentData);
+      throw new Error('Asaas payment response missing id');
     }
+
     console.log('Payment created:', paymentData.id);
+
+    let pixQrCodeData: { encodedImage: string; payload: string; expirationDate?: string } | null = null;
+
+    if (billingType === 'PIX') {
+      const { data: qrData } = await asaasRequest<{ encodedImage: string; payload: string; expirationDate?: string }>(
+        `/payments/${paymentData.id}/pixQrCode`,
+        { method: 'GET' }
+      );
+      pixQrCodeData = qrData;
+    }
+
+    const invoiceUrl = paymentData.invoiceUrl ?? paymentData.invoice_url ?? null;
+    const boletoUrl = paymentData.bankSlipUrl ?? null;
 
     // Salvar no banco de dados
     if (requestData.type === 'order') {
       const { error: insertError } = await supabaseClient.from('order_payments').insert({
         order_id: requestData.orderId,
         asaas_payment_id: paymentData.id,
-        asaas_invoice_url: paymentData.invoiceUrl ?? paymentData.invoice_url ?? null,
+        asaas_invoice_url: invoiceUrl,
         amount: requestData.amount,
         payment_method: (requestData.paymentMethod || '').toLowerCase(),
         status: paymentData.status ?? 'pending',
-        pix_qr_code: paymentData.encodedImage ?? null,
-        pix_qr_code_url: paymentData.invoiceUrl ?? null,
+        pix_qr_code: pixQrCodeData?.encodedImage ?? null,
+        pix_qr_code_url: invoiceUrl,
         expires_at: paymentData.dueDate ?? null,
       });
 
@@ -221,13 +284,13 @@ serve(async (req) => {
         restaurant_id: requestData.restaurantId,
         subscription_plan_id: requestData.subscriptionPlanId,
         asaas_payment_id: paymentData.id,
-        asaas_invoice_url: paymentData.invoiceUrl ?? paymentData.invoice_url ?? null,
+        asaas_invoice_url: invoiceUrl,
         amount: requestData.amount,
         payment_method: (requestData.paymentMethod || '').toLowerCase(),
         status: paymentData.status ?? 'pending',
-        pix_qr_code: paymentData.encodedImage ?? null,
-        pix_qr_code_url: paymentData.invoiceUrl ?? null,
-        boleto_url: paymentData.bankSlipUrl ?? paymentData.bankSlipUrl ?? null,
+        pix_qr_code: pixQrCodeData?.encodedImage ?? null,
+        pix_qr_code_url: invoiceUrl,
+        boleto_url: boletoUrl,
         expires_at: paymentData.dueDate ?? null,
       });
 
@@ -241,10 +304,10 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         paymentId: paymentData.id,
-        invoiceUrl: paymentData.invoiceUrl ?? paymentData.invoice_url ?? null,
-        pixQrCode: paymentData.encodedImage ?? null,
-        pixCopyPaste: paymentData.payload ?? null,
-        boletoUrl: paymentData.bankSlipUrl ?? paymentData.bankSlipUrl ?? null,
+        invoiceUrl,
+        pixQrCode: pixQrCodeData?.encodedImage ?? null,
+        pixCopyPaste: pixQrCodeData?.payload ?? null,
+        boletoUrl,
         status: paymentData.status ?? null,
       }),
       {
