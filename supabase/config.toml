@@ -1,1 +1,4 @@
 project_id = "dnlpoxlplidkasolssro"
+
+[functions.asaas-webhook]
+verify_jwt = false
